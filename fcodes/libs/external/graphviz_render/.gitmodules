@@ -1,0 +1,6 @@
+[submodule "windows/dependencies/graphviz-build-utilities"]
+	path = windows/dependencies/graphviz-build-utilities
+	url = https://gitlab.com/graphviz/graphviz-build-utilities
+[submodule "windows/dependencies/libraries"]
+	path = windows/dependencies/libraries
+	url = https://gitlab.com/graphviz/graphviz-windows-dependencies

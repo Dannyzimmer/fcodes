@@ -1,0 +1,7 @@
+graph G {
+	node [label="\N"];
+	graph [bb="0,0,58,36",
+		_draw_="c 5 -white C 5 -white P 4 0 0 0 36 58 36 58 0 ",
+		xdotversion="1.2"];
+	a [label="n_of_\G", shape=none, pos="29,18", width="0.81", height="0.50", _ldraw_="F 14.000000 11 -Times-Roman c 5 -black T 29 13 0 43 6 -n_of_G "];
+}

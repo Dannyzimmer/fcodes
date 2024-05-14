@@ -1,0 +1,7 @@
+digraph {
+	nslimit1=0;
+	a -> a[label="hello world"];
+	a -> b;
+	c -> a;
+	d -> b;
+}

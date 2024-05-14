@@ -1,0 +1,14 @@
+digraph G {
+	node [shape=box];
+	rankdir=LR;
+	"JI-41868" [label="JI-41868\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "; href="https://my.jira.instance/browse/JI-41868"; style=filled; fillcolor=white];
+	"JI-37097" [label="JI-37097\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "; href="https://my.jira.instance/browse/JI-37097"; style=filled; fillcolor=green];
+	"JI-36281" [label="JI-36281\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "; href="https://my.jira.instance/browse/JI-36281"; style=filled; fillcolor=green];
+	"JI-35559" [label="JI-35559\nLorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy "; href="https://my.jira.instance/browse/JI-35559"; style=filled; fillcolor=green];
+	"JI-41868" -> "JI-37097" [label="clones"];
+	"JI-37097" -> "JI-36281" [label="clones"];
+	"JI-36281" -> "JI-35559" [label="clones"];
+	"JI-35559" -> "JI-36281" [label="is cloned by"];
+	"JI-36281" -> "JI-37097" [label="is cloned by"];
+	"JI-37097" -> "JI-41868" [label="is cloned by"];
+}

@@ -1,0 +1,23 @@
+digraph TicketBooking {
+  component=true;layout=fdp;
+  node [shape=box style=filled];
+  cluster_reservation -> cluster_cinema;
+  cluster_reservation -> cluster_movie;
+  cluster_reservation -> cluster_user;
+
+  subgraph cluster_cinema {
+    label="Cinema(Context)";
+  }
+
+  subgraph cluster_movie {
+    label="Movie(Context)";
+  }
+
+  subgraph cluster_reservation {
+    label="Reservation(Context)";
+  }
+
+  subgraph cluster_user {
+    label="User(Context)";
+  }
+} 

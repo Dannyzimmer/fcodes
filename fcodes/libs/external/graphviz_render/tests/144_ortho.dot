@@ -1,0 +1,10 @@
+digraph Test {
+    splines = ortho;
+    nodesep = 1.0;
+    ranksep = 1.0;
+    edge [dir = both, arrowhead = vee, arrowtail = inv,
+          labelangle = 60, labeldistance = 2.2, headlabel = "Head", taillabel = "Tail"];
+    A -> B;
+    A -> C;
+    D -> C;
+}

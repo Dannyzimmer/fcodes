@@ -1,0 +1,6 @@
+/// Graph with >63 styles, totalling >128 bytes in one attribute. Note that we
+/// do not need the styles to be unique for this test case.
+
+digraph {
+  a[style="filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled,filled"];
+}

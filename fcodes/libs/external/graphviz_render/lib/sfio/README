@@ -1,0 +1,29 @@
+DIRECTORY HIERARCHY:
+
+This directory hierarchy has the source of Sfio, the Safe/Fast I/O library.
+
+. :		source code for Sfio.
+./Sfio_f:	function versions of sfio macros.
+
+SOFTWARE CONSTRUCTION:
+
+Two sets of libraries will be built:
+	libsfio.a and libstdio.a: for uni-threaded applications, and
+	libsfio-mt.a and libstdio-mt.a: for multi-threaded applications.
+
+Depending on the local platform, an application using the multi-threaded
+libraries may need to specify a thread library for linkage. For example,
+below are the known requirements for a few popular platforms:
+
+	Irix, Linux, Solaris systems:	-lpthread
+	Hpux:				-lcma
+	BSD:				none
+
+CORRESPONDENCE:
+Comments, etc. should be sent to:
+
+	Phong Vo
+	AT&T Labs - Research
+	180 Park Avenue
+	Florham Park, NJ 07932
+	e-mail: kpv@research.att.com

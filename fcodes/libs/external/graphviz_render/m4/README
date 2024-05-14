@@ -1,0 +1,14 @@
+The files: lib-ld.m4  lib-link.m4  lib-prefix.m4
+were obtained from gettext-0.11.4-5 sources.
+
+The file: glib-gettext.m4 was obtained from glib2-devel (go figure!)
+
+They are used in graphviz to avoid requiring gettext be installed.
+
+The file ax_check_compile_flag.m4 was obtained from commit
+0fbee2a29b67cc7867cfe19d473e9fb1f729f771 of
+    https://git.savannah.gnu.org/git/autoconf-archive.git
+
+The files ax_cxx_compile_stdcxx.m4 and ax_cxx_compile_stdcxx_11.m4 were obtained
+from commit efa6f204a6124e882abbbc6e056c91edfdc30555 of
+    https://git.savannah.gnu.org/git/autoconf-archive.git

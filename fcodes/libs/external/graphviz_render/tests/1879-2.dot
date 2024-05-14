@@ -1,0 +1,15 @@
+digraph "model" {
+  compound=true
+  subgraph cluster_1 {
+    label="cluster_1"
+    "C1N1"
+  }
+  subgraph cluster_2 {
+    label="cluster_2"
+    "C2N1"
+  }
+  "C1N1" -> "C2N1" [
+    lhead=cluster_2
+    ltail=cluster_1
+  ]
+}

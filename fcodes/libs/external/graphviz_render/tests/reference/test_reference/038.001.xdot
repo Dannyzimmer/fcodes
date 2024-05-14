@@ -1,0 +1,8 @@
+graph G {
+	node [label="\N"];
+	graph [bb="0,0,58,58",
+		_draw_="c 5 -white C 5 -white P 4 0 0 0 58 58 58 58 0 ",
+		xdotversion="1.2"];
+	a [label="center\naligned\ntext", shape=none, pos="29,29", width="0.81", height="0.81", _ldraw_="F 14.000000 11 -Times-Roman c 5 -black T 29 41 0 35 6 -center F 14.000000 11 -Times-Roman c 5 -black T 29 24 0 43 7 -aligned F 1\
+4.000000 11 -Times-Roman c 5 -black T 29 7 0 21 4 -text "];
+}

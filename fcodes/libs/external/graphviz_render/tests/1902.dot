@@ -1,0 +1,10 @@
+digraph {
+  nslimit1=0
+  subgraph cluster {
+    subgraph cluster {
+      a1 ->a2 a3
+    }
+    b1
+    b2->a1
+  } -> a3
+}

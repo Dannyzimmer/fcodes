@@ -1,0 +1,3 @@
+usr/lib/graphviz/php
+usr/share/man/man3/gv.3php
+@SWIG_PHP_DATA_TO_PACKAGE@

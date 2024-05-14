@@ -1,0 +1,13 @@
+digraph stuff {
+  green [shape=plaintext, label=<
+<TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" WIDTH="192" HEIGHT="128">
+  <TR>
+    <TD WIDTH="40">
+      <TABLE BORDER="0" CELLBORDER="1" CELLSPACING="0" WIDTH="40" HEIGHT="128">
+        <TR><TD PORT="inserter" WIDTH="40" HEIGHT="32" FIXEDSIZE="TRUE"> <TABLE BORDER="0" WIDTH="50" HEIGHT="32"><TR><TD WIDTH="8" HEIGHT="32">1</TD><TD WIDTH="32" HEIGHT="32"></TD></TR></TABLE> </TD></TR>
+      </TABLE>
+    </TD>
+  </TR>
+</TABLE>
+  >];
+}

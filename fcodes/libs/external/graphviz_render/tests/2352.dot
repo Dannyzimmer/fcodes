@@ -1,0 +1,5 @@
+digraph g{
+	node1[shape="box", label="", image="EDA.svg"]
+	node2[label="fuck me"]
+	node1 -> node2
+}

@@ -1,0 +1,8 @@
+graph G {
+	node [label="\N"];
+	graph [bb="0,0,54,52",
+		_draw_="c 5 -white C 5 -white P 4 0 0 0 52 54 52 54 0 ",
+		xdotversion="1.2"];
+	a [label="", shape=Mdiamond, pos="27,26", width="0.75", height="0.71", _draw_="c 5 -black p 4 27 51 0 26 27 1 54 26 c 5 -black L 2 9 34 9 18 c 5 -black L 2 18 9 36 9 c 5 -black L 2 45 18 45 34 c 5 -black L 2\
+ 36 43 18 43 "];
+}

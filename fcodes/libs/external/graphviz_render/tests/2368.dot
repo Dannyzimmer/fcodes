@@ -1,0 +1,33 @@
+digraph G {
+  compound=true;
+  concentrate=true;
+  node[shape=box,fontsize="8",color="#909090",height="0.1"];
+  edge[style="dashed",fontsize="8",color="#808080",arrowsize="0.5"];
+  line7[label="#7"];
+  {rank=same; line7;136;}
+  line7 -> 136[style=invis];
+  line11[label="#11"];
+  line7 -> line11[weight=100,style=invis];
+  {rank=same; line11;16;}
+  line11 -> 16[style=invis];
+  line16[label="#16"];
+  line11 -> line16[weight=100,style=invis];
+  {rank=same; line16;76;376;256;196;436;316;}
+  line16 -> 316[style=invis];
+  316 -> 76[style=invis];
+  76 -> 376[style=invis];
+  376 -> 256[style=invis];
+  256 -> 196[style=invis];
+  196 -> 436[style=invis];
+  76 -> 376[label="from1"];
+  376 -> 76[label="to1"];
+  16 -> 76[label="ignore"];
+  196 -> 376[label="from2"];
+  376 -> 196[label="to2"];
+  136 -> 196[label="ignore"];
+  256 -> 436[label="to2"];
+  256 -> 376[label="to1"];
+  256 -> 316[label="as"];
+  436 -> 256[label="from2"];
+  376 -> 256[label="from1"];
+}

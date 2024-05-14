@@ -1,0 +1,32 @@
+Contributed software
+
+  dirgraph :
+    Perl script for creating a dot graph file from a directory hierarchy
+    Diomidis Spinellis
+    dds@aueb.gr
+
+  dotmcl.pl :
+    Perl script for clustering nodes in a dot graph.
+    Vladimir Alexiev 
+    vladimir@worklogic.com
+
+  dot_url_resolve.py :
+    Python script for downloading external image sources.
+    Matthew Fernandez
+    matthew.fernandez@gmail.com
+
+  gprof2dot.awk :
+    Awk script to convert gprof output into a dot graph.
+    Stephen C. North
+    north@research.att.com
+
+  prune :
+	program to prune directed subtrees 
+	Marcus Harnisch
+	marcus.harnisch@gmx.net
+
+  java-dot :
+	java classes for creating a graph in the dot language
+	Florian Liekweg
+	liekweg@ipd.info.uni-karlsruhe.de
+

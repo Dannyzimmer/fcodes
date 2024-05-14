@@ -1,0 +1,33 @@
+digraph fsm {
+  node [fontsize=9];
+  edge [fontsize=9];
+
+  overlap=false;
+
+  splines=curved;
+
+  layout=neato;
+  nodesep=0.3;
+  model=mds;
+  mode="hier";
+
+  hidden [shape=point, style=invis];
+
+  hidden -> "power on" [len=0.2 tailport=_ headport=_];
+  "power on" -> "sign in" [label="critical\nsettings\nnot\nmissing" len=0.4];
+  "power on" -> "wait for\nbecoming\noffline" [label="critical\nsettings\nmissing" len=0.2];
+  "wait for\nbecoming\noffline" -> "critical\nsettings" [label="we are\noffline" len=0.3];
+  "critical\nsettings" -> "critical\nsettings" [label="incorrect\ninput" tailport=e headport=e];
+  "critical\nsettings" -> "sign in" [label="correct\ninput" len=0.4];
+  "sign in" -> dashboard [label="correct\nsecrets"];
+  "sign in" -> "sign in" [label="incorrect\nsecrets" tailport=e headport=e];
+  dashboard -> settings [label="click\n\"Settings\""];
+  dashboard -> dashboard [label="correct\ninput" tailport=w headport=w];
+  dashboard -> dashboard [label="incorrect\ninput" tailport=e headport=e];
+  dashboard -> "sign in" [label="click\n\"Sign out\""];
+  settings -> settings [label="correct\ninput" tailport=w headport=w];
+  settings -> settings [label="incorrect\ninput" tailport=e headport=e];
+  settings -> dashboard [label="click\n\"Dashboard\""];
+  settings -> "sign in" [label="click\n\"Sign out\""];
+  settings -> "wait for\nbecoming\noffline" [label="complete\nwipe" len=1.6];
+}

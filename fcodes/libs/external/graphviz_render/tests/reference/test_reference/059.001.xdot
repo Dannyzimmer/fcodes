@@ -1,0 +1,9 @@
+digraph G {
+	node [label="\N", shape=none];
+	graph [bb="0,0,54,108",
+		_draw_="c 5 -white C 5 -white P 4 0 0 0 108 54 108 54 0 ",
+		xdotversion="1.2"];
+	a [label="", pos="27,90", width="0.75", height="0.50"];
+	b [label="", pos="27,18", width="0.75", height="0.50"];
+	a -> b [arrowhead=rnormal, pos="e,27,36 27,72 27,64 27,55 27,46", _draw_="c 5 -black B 4 27 72 27 64 27 55 27 46 ", _hdraw_="S 5 -solid S 15 -setlinewidth(1) c 5 -black C 5 -black P 3 27 36 24 46 27 46 "];
+}

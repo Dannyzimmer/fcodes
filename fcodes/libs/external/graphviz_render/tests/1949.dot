@@ -1,0 +1,69 @@
+digraph G {
+rankdir=LR;
+bgcolor=transparent;
+node[fontsize=8 shape=box];
+edge[fontsize=8, arrowsize=0.7];
+compound=true;
+remincross=true;
+nodesep=0.4;
+ranksep=.4;
+structDefaultroot->structC[label=<  > fontname=Arial, style=dotted];
+structHell:W -> structDefaultDunkel[labeldistance = 2.0, taillabel=<evE...>  color=black, fontname=Arial,fontcolor=black lhead=clusterDunkel];//Hell Dunkel
+structDefaultDunkel->structHell:SE[labeldistance=2.0, headlabel=<evE...>  color=black, fontname=Arial,fontcolor=black ltail=clusterDunkel];//Dunkel structHell
+structNichtsErkannt->structEtwasErkannt[label=<evP...>  color=black, fontname=Arial, fontcolor=black]; //NichtsErkannt EtwasErkannt
+structEtwasErkannt->structNichtsErkannt[label=<evP...>  color=black, fontname=Arial, fontcolor=black]; //EtwasErkannt NichtsErkannt
+structDefaultDunkel->structNichtsErkannt[label=<  > fontname=Arial, style=dotted];
+structC -> structDefaultAuto[labeldistance = 2.0, taillabel=<&#91;au...>  color=black, fontname=Arial,fontcolor=black lhead=clusterAuto];//C Auto
+structC->structParty[label=<&#91;el...>  color=black, fontname=Arial, fontcolor=black]; //C Party
+structDefaultAuto->structHell[label=<  > fontname=Arial, style=dotted];
+structDefaultAuto->structParty:N[labeldistance=2.0, headlabel=<evP...>  color=black, fontname=Arial,fontcolor=black ltail=clusterAuto];//Auto structParty
+structParty:S -> structDefaultAuto[labeldistance=2.0, taillabel=<evA...> color=blue, fontname=Arial, fontcolor=blue lhead=clusterAuto];//Party Auto
+structEtwasErkannt->structEtwasErkannt[label=<evE...>  color=black, fontname=Arial, fontcolor=black]; //EtwasErkannt EtwasErkannt
+structParty->structFinale[label=<evE...> color=blue, fontname=Arial, fontcolor=blue]; //Party Finale
+structDefaultAuto->structFinale[labeldistance=2.0, headlabel=<evE...>  color=black, fontname=Arial,fontcolor=black ltail=clusterAuto];//Auto structFinale
+structDefaultroot[shape=circle, fontsize=8, height=0.5, width=0.5, fixedsize=true, fontname=Arial, fontcolor=white,fillcolor=black,  style=filled label=< <TABLE BORDER="0"><TR><TD PORT="NW"></TD> <TD PORT="N"></TD> <TD PORT="NE"></TD></TR><TR><TD PORT="W"> </TD> <TD BORDER="0" ALIGN="CENTER"> <FONT COLOR="white"> </FONT>  </TD> <TD PORT="E"></TD></TR><TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR></TABLE> >];
+structParty[penwidth="1" style=rounded BORDER="1" color="red" fontname=Arial label=< <TABLE STYLE="rounded" BORDER="0" CELLBORDER="0">
+<TR><TD PORT="NW"></TD><TD PORT="N"></TD><TD PORT="NE"></TD></TR>
+<TR><TD PORT="W"></TD> <TD BORDER="1" SIDES="B">Party</TD><TD PORT="E"></TD></TR>
+<TR><TD COLSPAN="3" ALIGN="LEFT">Entry:<br ALIGN="LEFT"/>lic...</TD></TR>
+<TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR>
+</TABLE> >];
+
+subgraph "clusterAuto"{fontname=Arial; fontsize=8
+color=black; style=rounded;
+ label=< <TABLE BORDER="0" ><TR><TD PORT="E"></TD><TD BORDER="1" SIDES="B"> Auto </TD><TD PORT="E"></TD></TR></TABLE> >;
+
+structHell[penwidth="1" style=rounded BORDER="1" color="black" fontname=Arial label=< <TABLE STYLE="rounded" BORDER="0" CELLBORDER="0">
+<TR><TD PORT="NW"></TD><TD PORT="N"></TD><TD PORT="NE"></TD></TR>
+<TR><TD PORT="W"></TD> <TD BORDER="1" SIDES="B">Hell</TD><TD PORT="E"></TD></TR>
+<TR><TD COLSPAN="3" ALIGN="LEFT">Entry:<br ALIGN="LEFT"/>lic...</TD></TR>
+<TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR>
+</TABLE> >];
+
+subgraph "clusterDunkel"{fontname=Arial; fontsize=8
+color=black; style=rounded;
+ label=< <TABLE BORDER="0" ><TR><TD PORT="E"></TD><TD BORDER="1" SIDES="B"> Dunkel </TD><TD PORT="E"></TD></TR></TABLE> >;
+structDefaultDunkel[shape=circle, fontsize=8, height=0.5, width=0.5, fixedsize=true, fontname=Arial, fontcolor=white,fillcolor=black,  style=filled label=< <TABLE BORDER="0"><TR><TD PORT="NW"></TD> <TD PORT="N"></TD> <TD PORT="NE"></TD></TR><TR><TD PORT="W"> </TD> <TD BORDER="0" ALIGN="CENTER"> <FONT COLOR="white"> </FONT>  </TD> <TD PORT="E"></TD></TR><TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR></TABLE> >];
+structNichtsErkannt[penwidth="1" style=rounded BORDER="1" color="black" fontname=Arial label=< <TABLE STYLE="rounded" BORDER="0" CELLBORDER="0">
+<TR><TD PORT="NW"></TD><TD PORT="N"></TD><TD PORT="NE"></TD></TR>
+<TR><TD PORT="W"></TD> <TD BORDER="1" SIDES="B">NichtsErkannt</TD><TD PORT="E"></TD></TR>
+<TR><TD COLSPAN="3" ALIGN="LEFT">Entry:<br ALIGN="LEFT"/>lic...</TD></TR>
+<TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR>
+</TABLE> >];
+
+
+structEtwasErkannt[penwidth="1" style=rounded BORDER="1" color="black" fontname=Arial label=< <TABLE STYLE="rounded" BORDER="0" CELLBORDER="0">
+<TR><TD PORT="NW"></TD><TD PORT="N"></TD><TD PORT="NE"></TD></TR>
+<TR><TD PORT="W"></TD> <TD BORDER="1" SIDES="B">EtwasErkannt</TD><TD PORT="E"></TD></TR>
+<TR><TD COLSPAN="3" ALIGN="LEFT">Entry:<br ALIGN="LEFT"/>lic...</TD></TR>
+<TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR>
+</TABLE> >];
+
+};
+
+structDefaultAuto[shape=circle, fontsize=8, height=0.5, width=0.5, fixedsize=true, fontname=Arial, fontcolor=white,fillcolor=black,  style=filled label=< <TABLE BORDER="0"><TR><TD PORT="NW"></TD> <TD PORT="N"></TD> <TD PORT="NE"></TD></TR><TR><TD PORT="W"> </TD> <TD BORDER="0" ALIGN="CENTER"> <FONT COLOR="white"> </FONT>  </TD> <TD PORT="E"></TD></TR><TR><TD PORT="SW"></TD><TD PORT="S"></TD><TD PORT="SE"></TD></TR></TABLE> >];};
+
+structFinale[label=< >,shape=doublecircle, width=0.4, fontname=Arial, fillcolor=black, fixedsize=true, height=0.2, width=0.2, style=filled];
+structC [label=<  > shape=diamond, fixedsize=true, height=0.2, width=0.2, fontname=Arial color=black];
+
+}

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<gxl xmlns:xlink=" http://www.w3.org/1999/xlink">
+  <graph id="foo" edgemode="directed">
+    <node id="bar">
+      <attr name="name">
+        <string>qux</string>
+      </attr>
+    </node>
+  </graph>
+</gxl>

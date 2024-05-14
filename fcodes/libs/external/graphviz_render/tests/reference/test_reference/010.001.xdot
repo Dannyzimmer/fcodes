@@ -1,0 +1,7 @@
+graph G {
+	node [label="\N"];
+	graph [bb="0,0,54,72",
+		_draw_="c 5 -white C 5 -white P 4 0 0 0 72 54 72 54 0 ",
+		xdotversion="1.2"];
+	a [label="", shape=invtriangle, pos="27,36", width="0.75", height="1.00", _draw_="c 5 -black p 3 27 0 54 54 0 54 "];
+}

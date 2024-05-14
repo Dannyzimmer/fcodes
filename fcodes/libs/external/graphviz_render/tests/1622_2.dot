@@ -1,0 +1,88 @@
+digraph stuff {
+  n1 [shape=plaintext, label=<
+<TABLE CELLSPACING="0" CELLPADDING="0" BORDER="0" CELLBORDER="0" WIDTH="212" HEIGHT="160" FIXEDSIZE="TRUE">
+  <TR>
+    <TD WIDTH="50" HEIGHT="160" VALIGN="TOP">
+      <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="64">
+        <TR>
+          <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" CELLBORDER="0" WIDTH="50" HEIGHT="32" PORT="crude_oil">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">100</TD>
+               </TR>
+             </TABLE>
+           </TD>
+        </TR>
+        <TR>
+          <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLPADDING="0" CELLSPACING="0" BORDER="0" CELLBORDER="0" WIDTH="50" HEIGHT="32" PORT="water">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">50</TD>
+               </TR>
+             </TABLE>
+           </TD>
+        </TR>
+      </TABLE>
+    </TD>
+    <TD WIDTH="50" HEIGHT="160" FIXEDSIZE="TRUE">
+       <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50">
+         <TR>
+           <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="32" FIXEDSIZE="TRUE" VALIGN="BOTTOM">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">55.0</TD>
+               </TR>
+             </TABLE>
+           </TD>
+         </TR>
+         <TR>
+           <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="32" FIXEDSIZE="TRUE" VALIGN="BOTTOM">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">55.0</TD>
+               </TR>
+             </TABLE>
+           </TD>
+         </TR>
+         <TR>
+           <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="32" FIXEDSIZE="TRUE" VALIGN="BOTTOM">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">25.0</TD>
+               </TR>
+             </TABLE>
+           </TD>
+         </TR>
+         <TR>
+           <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="32" FIXEDSIZE="TRUE" VALIGN="BOTTOM">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">25.0</TD>
+               </TR>
+             </TABLE>
+           </TD>
+         </TR>
+         <TR>
+           <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="32" FIXEDSIZE="TRUE" VALIGN="BOTTOM">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">45.0</TD>
+               </TR>
+             </TABLE>
+           </TD>
+         </TR>
+         <TR>
+           <TD WIDTH="50" HEIGHT="32">
+             <TABLE CELLSPACING="0" BORDER="0" CELLBORDER="0" CELLPADDING="0" WIDTH="50" HEIGHT="32" FIXEDSIZE="TRUE" VALIGN="BOTTOM">
+               <TR>
+                 <TD WIDTH="18" HEIGHT="32" FIXEDSIZE="TRUE">45.0</TD>
+               </TR>
+             </TABLE>
+           </TD>
+         </TR>
+      </TABLE>
+    </TD>
+  </TR>
+</TABLE>
+  >];
+}

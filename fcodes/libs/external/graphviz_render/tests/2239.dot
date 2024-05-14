@@ -1,0 +1,713 @@
+digraph pipeline {
+  rankdir=LR;
+  fontname="sans";
+  fontsize="10";
+  labelloc=t;
+  nodesep=.1;
+  ranksep=.2;
+  label="<GstPipeline>\ncomposition-publisher-ad3238ef-b57f-4c1c-876b-20d5403c9352\n[>]";
+  node [style="filled,rounded", shape=box, fontsize="9", fontname="sans", margin="0.0,0.0"];
+  edge [labelfontsize="6", fontsize="9", fontname="monospace"];
+  
+  legend [
+    pos="0,0!",
+    margin="0.05,0.05",
+    style="filled",
+    label="Legend\lElement-States: [~] void-pending, [0] null, [-] ready, [=] paused, [>] playing\lPad-Activation: [-] none, [>] push, [<] pull\lPad-Flags: [b]locked, [f]lushing, [b]locking, [E]OS; upper-case is set\lPad-Task: [T] has started task, [t] has paused task\l",
+  ];
+  subgraph cluster_capsfilter3_0x56412434cb80 {
+    fontname="Bitstream Vera Sans";
+    fontsize="8";
+    style="filled,rounded";
+    color=black;
+    label="GstCapsFilter\ncapsfilter3\n[>]\ncaps=application/x-rtp";
+    subgraph cluster_capsfilter3_0x56412434cb80_sink {
+      label="";
+      style="invis";
+      capsfilter3_0x56412434cb80_sink_0x5641244b78b0 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+    }
+
+    subgraph cluster_capsfilter3_0x56412434cb80_src {
+      label="";
+      style="invis";
+      capsfilter3_0x56412434cb80_src_0x5641244b7b00 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+    }
+
+    capsfilter3_0x56412434cb80_sink_0x5641244b78b0 -> capsfilter3_0x56412434cb80_src_0x5641244b7b00 [style="invis"];
+    fillcolor="#aaffaa";
+  }
+
+  capsfilter3_0x56412434cb80_src_0x5641244b7b00 -> composition_publisher_webrtc_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x564124480420_sink_0_0x5641244e2110 [label="application/x-rtp\l               media: video\l          clock-rate: 90000\l       encoding-name: VP8\l             payload: 96\l                ssrc: 4248884646\l    timestamp-offset: 257195406\l       seqnum-offset: 23265\l         a-framerate: 30\l            extmap-1: http://www.ietf.org/id...\l"]
+  subgraph cluster_rtpvp8pay0_0x5641244d40a0 {
+    fontname="Bitstream Vera Sans";
+    fontsize="8";
+    style="filled,rounded";
+    color=black;
+    label="GstRtpVP8Pay\nrtpvp8pay0\n[>]\ntimestamp=2684724074\nseqnum=25557\npicture-id-mode=15-bit";
+    subgraph cluster_rtpvp8pay0_0x5641244d40a0_sink {
+      label="";
+      style="invis";
+      rtpvp8pay0_0x5641244d40a0_sink_0x5641244b7410 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+    }
+
+    subgraph cluster_rtpvp8pay0_0x5641244d40a0_src {
+      label="";
+      style="invis";
+      rtpvp8pay0_0x5641244d40a0_src_0x5641244b71c0 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+    }
+
+    rtpvp8pay0_0x5641244d40a0_sink_0x5641244b7410 -> rtpvp8pay0_0x5641244d40a0_src_0x5641244b71c0 [style="invis"];
+    fillcolor="#aaffaa";
+  }
+
+  rtpvp8pay0_0x5641244d40a0_src_0x5641244b71c0 -> capsfilter3_0x56412434cb80_sink_0x5641244b78b0 [label="application/x-rtp\l               media: video\l          clock-rate: 90000\l       encoding-name: VP8\l             payload: 96\l       seqnum-offset: 23265\l    timestamp-offset: 257195406\l                ssrc: 4248884646\l         a-framerate: 30\l            extmap-1: http://www.ietf.org/id...\l"]
+  subgraph cluster_vp8enc0_0x5641244c5c60 {
+    fontname="Bitstream Vera Sans";
+    fontsize="8";
+    style="filled,rounded";
+    color=black;
+    label="GstVP8Enc\nvp8enc0\n[>]\ntarget-bitrate=2048000\nresize-up-threshold=60\nresize-down-threshold=30\ntwopass-vbr-maxsection=400\nkeyframe-max-dist=120\nerror-resilient=partitions\nthreads=4\ndeadline=1\ncpu-used=4\nstatic-threshold=100\ntoken-partitions=4";
+    subgraph cluster_vp8enc0_0x5641244c5c60_sink {
+      label="";
+      style="invis";
+      vp8enc0_0x5641244c5c60_sink_0x5641244b6d20 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+    }
+
+    subgraph cluster_vp8enc0_0x5641244c5c60_src {
+      label="";
+      style="invis";
+      vp8enc0_0x5641244c5c60_src_0x5641244b6f70 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+    }
+
+    vp8enc0_0x5641244c5c60_sink_0x5641244b6d20 -> vp8enc0_0x5641244c5c60_src_0x5641244b6f70 [style="invis"];
+    fillcolor="#aaffaa";
+  }
+
+  vp8enc0_0x5641244c5c60_src_0x5641244b6f70 -> rtpvp8pay0_0x5641244d40a0_sink_0x5641244b7410 [label="video/x-vp8\l             profile: 0\l        streamheader: < (buffer)4f56503830... >\l               width: 1920\l              height: 1080\l  pixel-aspect-ratio: 1/1\l           framerate: 30/1\l      interlace-mode: progressive\l         colorimetry: 2:3:7:1\l"]
+  subgraph cluster_composition_publisher_video_src_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x5641244d3480 {
+    fontname="Bitstream Vera Sans";
+    fontsize="8";
+    style="filled,rounded";
+    color=black;
+    label="GstAppSrc\ncomposition-publisher-video-src-ad3238ef-b57f-4c1c-876b-20d5403c9352\n[>]\ncaps=video/x-raw, width=(int)1920, height=(int)1080, framerate=(fraction)30/1, pixel-aspect-ratio=(fraction)1/1, format=(string)I420, colorimetry=(string)2:3:7:1\nmax-bytes=0\nmax-time=500000000\nformat=time\nis-live=TRUE\nmin-latency=413333333\ncurrent-level-bytes=24883200\ncurrent-level-buffers=8\ncurrent-level-time=266666667\nhandle-segment-change=TRUE\nleaky-type=downstream";
+    subgraph cluster_composition_publisher_video_src_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x5641244d3480_src {
+      label="";
+      style="invis";
+      composition_publisher_video_src_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x5641244d3480_src_0x5641244b7660 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb][T]", height="0.2", style="filled,solid"];
+    }
+
+    fillcolor="#ffaaaa";
+  }
+
+  composition_publisher_video_src_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x5641244d3480_src_0x5641244b7660 -> vp8enc0_0x5641244c5c60_sink_0x5641244b6d20 [label="video/x-raw\l               width: 1920\l              height: 1080\l           framerate: 30/1\l  pixel-aspect-ratio: 1/1\l              format: I420\l         colorimetry: 2:3:7:1\l"]
+  subgraph cluster_composition_publisher_webrtc_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x564124480420 {
+    fontname="Bitstream Vera Sans";
+    fontsize="8";
+    style="filled,rounded";
+    color=black;
+    label="GstWebRTCBin\ncomposition-publisher-webrtc-ad3238ef-b57f-4c1c-876b-20d5403c9352\n[>]\nconnection-state=connected\nice-gathering-state=complete\nice-connection-state=completed\nlocal-description=((GstWebRTCSessionDescription*) 0x7f072c005a20)\ncurrent-local-description=((GstWebRTCSessionDescription*) 0x7f072c005a20)\nremote-description=((GstWebRTCSessionDescription*) 0x7f072c005a20)\ncurrent-remote-description=((GstWebRTCSessionDescription*) 0x7f072c005a20)\nbundle-policy=max-bundle\nice-agent=(GstWebRTCICE) composition-publisher-webrtc-ad3238ef-b57f-4c1c-876b-20d5403c9352:ice";
+    subgraph cluster_composition_publisher_webrtc_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x564124480420_sink {
+      label="";
+      style="invis";
+      _proxypad0_0x5641244e4100 [color=black, fillcolor="#ddddff", label="proxypad0\n[>][bfb]", height="0.2", style="filled,solid"];
+    composition_publisher_webrtc_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x564124480420_sink_0_0x5641244e2110 -> _proxypad0_0x5641244e4100 [style=dashed, minlen=0]
+      composition_publisher_webrtc_ad3238ef_b57f_4c1c_876b_20d5403c9352_0x564124480420_sink_0_0x5641244e2110 [color=black, fillcolor="#ddddff", label="sink_0\ntransceiver=(WebRTCTransceiver) webrtctransceiver0\n[>][bfb]", height="0.2", style="filled,dashed"];
+    }
+
+    fillcolor="#ffffff";
+    subgraph cluster_clocksync1_0x7f06e804aa40 {
+      fontname="Bitstream Vera Sans";
+      fontsize="8";
+      style="filled,rounded";
+      color=black;
+      label="GstClockSync\nclocksync1\n[>]";
+      subgraph cluster_clocksync1_0x7f06e804aa40_sink {
+        label="";
+        style="invis";
+        clocksync1_0x7f06e804aa40_sink_0x7f06a0055390 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+      }
+
+      subgraph cluster_clocksync1_0x7f06e804aa40_src {
+        label="";
+        style="invis";
+        clocksync1_0x7f06e804aa40_src_0x7f06a00555e0 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+      }
+
+      clocksync1_0x7f06e804aa40_sink_0x7f06a0055390 -> clocksync1_0x7f06e804aa40_src_0x7f06a00555e0 [style="invis"];
+      fillcolor="#aaffaa";
+    }
+
+    _proxypad0_0x5641244e4100 -> clocksync1_0x7f06e804aa40_sink_0x7f06a0055390 [label="application/x-rtp\l               media: video\l          clock-rate: 90000\l       encoding-name: VP8\l             payload: 96\l                ssrc: 4248884646\l    timestamp-offset: 257195406\l       seqnum-offset: 23265\l         a-framerate: 30\l            extmap-1: http://www.ietf.org/id...\l"]
+    clocksync1_0x7f06e804aa40_src_0x7f06a00555e0 -> rtpfunnel1_0x7f06a004b3f0_sink_0_0x7f06a0055830 [label="application/x-rtp\l               media: video\l          clock-rate: 90000\l       encoding-name: VP8\l             payload: 96\l                ssrc: 4248884646\l    timestamp-offset: 257195406\l       seqnum-offset: 23265\l         a-framerate: 30\l            extmap-1: http://www.ietf.org/id...\l"]
+    subgraph cluster_queue4_0x7f06e8059b30 {
+      fontname="Bitstream Vera Sans";
+      fontsize="8";
+      style="filled,rounded";
+      color=black;
+      label="GstQueue\nqueue4\n[>]";
+      subgraph cluster_queue4_0x7f06e8059b30_sink {
+        label="";
+        style="invis";
+        queue4_0x7f06e8059b30_sink_0x7f06a0044840 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+      }
+
+      subgraph cluster_queue4_0x7f06e8059b30_src {
+        label="";
+        style="invis";
+        queue4_0x7f06e8059b30_src_0x7f06a0045d10 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb][T]", height="0.2", style="filled,solid"];
+      }
+
+      queue4_0x7f06e8059b30_sink_0x7f06a0044840 -> queue4_0x7f06e8059b30_src_0x7f06a0045d10 [style="invis"];
+      fillcolor="#aaffaa";
+    }
+
+    queue4_0x7f06e8059b30_src_0x7f06a0045d10 -> rtpbin_0x56412448e390_send_rtp_sink_0_0x7f06a005c7b0 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+    subgraph cluster_rtpfunnel1_0x7f06a004b3f0 {
+      fontname="Bitstream Vera Sans";
+      fontsize="8";
+      style="filled,rounded";
+      color=black;
+      label="GstRtpFunnel\nrtpfunnel1\n[>]";
+      subgraph cluster_rtpfunnel1_0x7f06a004b3f0_sink {
+        label="";
+        style="invis";
+        rtpfunnel1_0x7f06a004b3f0_sink_0_0x7f06a0055830 [color=black, fillcolor="#aaaaff", label="sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+      }
+
+      subgraph cluster_rtpfunnel1_0x7f06a004b3f0_src {
+        label="";
+        style="invis";
+        rtpfunnel1_0x7f06a004b3f0_src_0x7f06a00445f0 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+      }
+
+      rtpfunnel1_0x7f06a004b3f0_sink_0_0x7f06a0055830 -> rtpfunnel1_0x7f06a004b3f0_src_0x7f06a00445f0 [style="invis"];
+      fillcolor="#aaffaa";
+    }
+
+    rtpfunnel1_0x7f06a004b3f0_src_0x7f06a00445f0 -> queue4_0x7f06e8059b30_sink_0x7f06a0044840 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+    subgraph cluster_transportreceivebin2_0x7f06e80109f0 {
+      fontname="Bitstream Vera Sans";
+      fontsize="8";
+      style="filled,rounded";
+      color=black;
+      label="TransportReceiveBin\ntransportreceivebin2\n[>]\nstream=(TransportStream) transportstream1";
+      subgraph cluster_transportreceivebin2_0x7f06e80109f0_src {
+        label="";
+        style="invis";
+        _proxypad40_0x7f06a0031d50 [color=black, fillcolor="#ffdddd", label="proxypad40\n[>][bfb]", height="0.2", style="filled,solid"];
+      _proxypad40_0x7f06a0031d50 -> transportreceivebin2_0x7f06e80109f0_rtp_src_0x7f06e80513e0 [style=dashed, minlen=0]
+        transportreceivebin2_0x7f06e80109f0_rtp_src_0x7f06e80513e0 [color=black, fillcolor="#ffdddd", label="rtp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad41_0x7f06a00340c0 [color=black, fillcolor="#ffdddd", label="proxypad41\n[>][bfb]", height="0.2", style="filled,solid"];
+      _proxypad41_0x7f06a00340c0 -> transportreceivebin2_0x7f06e80109f0_rtcp_src_0x7f06e8051650 [style=dashed, minlen=0]
+        transportreceivebin2_0x7f06e80109f0_rtcp_src_0x7f06e8051650 [color=black, fillcolor="#ffdddd", label="rtcp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad43_0x7f06a0035880 [color=black, fillcolor="#ffdddd", label="proxypad43\n[>][bfb]", height="0.2", style="filled,solid"];
+      _proxypad43_0x7f06a0035880 -> transportreceivebin2_0x7f06e80109f0_data_src_0x7f06e805ef00 [style=dashed, minlen=0]
+        transportreceivebin2_0x7f06e80109f0_data_src_0x7f06e805ef00 [color=black, fillcolor="#ffdddd", label="data_src\n[>][bfb]", height="0.2", style="filled,solid"];
+      }
+
+      fillcolor="#ffffff";
+      subgraph cluster_nicesrc1_0x7f06e8043140 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstNiceSrc\nnicesrc1\n[>](locked)\ndo-timestamp=TRUE\nagent=((NiceAgent*) 0x564124497150)\nstream=1\ncomponent=1";
+        subgraph cluster_nicesrc1_0x7f06e8043140_src {
+          label="";
+          style="invis";
+          nicesrc1_0x7f06e8043140_src_0x7f06a000f760 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb][T]", height="0.2", style="filled,solid"];
+        }
+
+        fillcolor="#ffaaaa";
+      }
+
+      nicesrc1_0x7f06e8043140_src_0x7f06a000f760 -> capsfilter6_0x7f06b803ab20_sink_0x7f06b8036c70 [label="ANY"]
+      subgraph cluster_capsfilter6_0x7f06b803ab20 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstCapsFilter\ncapsfilter6\n[>]\ncaps=application/x-rtp";
+        subgraph cluster_capsfilter6_0x7f06b803ab20_sink {
+          label="";
+          style="invis";
+          capsfilter6_0x7f06b803ab20_sink_0x7f06b8036c70 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        subgraph cluster_capsfilter6_0x7f06b803ab20_src {
+          label="";
+          style="invis";
+          capsfilter6_0x7f06b803ab20_src_0x7f06b8036ec0 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        capsfilter6_0x7f06b803ab20_sink_0x7f06b8036c70 -> capsfilter6_0x7f06b803ab20_src_0x7f06b8036ec0 [style="invis"];
+        fillcolor="#aaffaa";
+      }
+
+      capsfilter6_0x7f06b803ab20_src_0x7f06b8036ec0 -> queue2_0x7f06e8059830_sink_0x7f06b803c670 [label="application/x-rtp\l"]
+      subgraph cluster_queue2_0x7f06e8059830 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstQueue\nqueue2\n[>]\nmax-size-buffers=0\nmax-size-bytes=5242880\nmax-size-time=0";
+        subgraph cluster_queue2_0x7f06e8059830_sink {
+          label="";
+          style="invis";
+          queue2_0x7f06e8059830_sink_0x7f06b803c670 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        subgraph cluster_queue2_0x7f06e8059830_src {
+          label="";
+          style="invis";
+          queue2_0x7f06e8059830_src_0x7f06b803c8c0 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb][T]", height="0.2", style="filled,solid"];
+        }
+
+        queue2_0x7f06e8059830_sink_0x7f06b803c670 -> queue2_0x7f06e8059830_src_0x7f06b803c8c0 [style="invis"];
+        fillcolor="#aaffaa";
+      }
+
+      queue2_0x7f06e8059830_src_0x7f06b803c8c0 -> dtlssrtpdec2_0x7f06e801d830_sink_0x7f06e801b160 [label="application/x-rtp\l"]
+      subgraph cluster_dtlssrtpdec2_0x7f06e801d830 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstDtlsSrtpDec\ndtlssrtpdec2\n[>]\nconnection-id=\"rtp_0_2206395326\"\npem=\"-----BEGIN CERTIFICATE-----\\nMIICpzCCAY+gAwIBAgIJAIGRTrfaaNwuMA0GCSqGSIb3DQEBCwUAMBMxETAPBgNV\\nBAMMCFNDb0tZTk4zMB4XDTIyMDUxOTEwMjcxMVoXDTIzMDUxOTEwMjcxMVowEzER\\nMA8GA1UEAwwIU0NvS1lOTjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\\nAQC8XGW4Qiz3tqLwzthiV76mmin3ufZyBBKU/EuKpVg4eAZU60l9lvrzYPmV4ro2\\nx4rreKWBt710lkRMVW9e9CSAzQG4z3/YUfNeXiXss/sDXOTp3BUz5PMQWR0X66cl\\nj3P06AuOmZLJ9uqFfxlUcsbki/vYaOOlf+arhaQbldBxKzsEb52L3ot3LSmMCHcf\\njDWbCmEwnQSjAReUE+BvIA8rYEd+8KdcjaCEj1IE+3Lce2KxzkFy98IQKC3XE4et\\npNqTHdPp+SJEKD6nW+CSLMXw67h+A0kzmbxxwTBj/szL0QeGodoVCvJvF8UMTg2y\\nyUUNh49E4RaQwA55W7jzE+alAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAFxvaaHq\\ntSW5z6JzDUBEZvfaKHf79+BlWQVUT4fUUVx7I42zMCHyUJVA4bHOI58OKXsssVlx\\nwLMlEZbheM1Evqbrc4w2N/+r+MtYaulqEHnAUKsnuRgurWOnk3OPdQ+xj4xqA/i4\\nkYuHJBrCO2LjYz+Gm+YJi247fHuUP1yYFwPyMNDbtIJVcyXlhF7obVh68RZ3bZGt\\nMdcQ2a9VTe44DZWkFwERKOoXy2jWiUenSc4feYhoidtNp4ME9ItVGq4qXsFQGynk\\ntTmqYmZbOn50qw9M+msy0f9K4tw/fG/MmsGkSTUVg4VBhh9haBUDsK4J7C7hJ81p\\najfZ8rC1VNWHCLs=\\n-----END CERTIFICATE-----\\n\"\npeer-pem=\"-----BEGIN CERTIFICATE-----\\nMIIBLjCB1qADAgECAgUAwWp+KzAJBgcqhkjOPQQBMCAxDjAMBgNVBAoMBUphbnVz\\nMQ4wDAYDVQQDDAVKYW51czAeFw0yMTA0MTIxODE3NDZaFw0yMzA0MTIxODE3NDZa\\nMCAxDjAMBgNVBAoMBUphbnVzMQ4wDAYDVQQDDAVKYW51czBZMBMGByqGSM49AgEG\\nCCqGSM49AwEHA0IABB1VH7rC/B9H3D9q0khWA11FbMTWLdZ8xCtnQt6QHQ5qDv5Y\\nf/uEDgIpo32CFJNaOjcyRQ4ZEG2F0KreUzNC7t8wCQYHKoZIzj0EAQNIADBFAiEA\\n1tLkHph9cY2RHTamhJmBetmcr/Z4LVDSt1LFnbsRCzACICw0Pgi+fMHMafhx9Omb\\ntasS9HTHRbggqq+zgcjdMiaR\\n-----END CERTIFICATE-----\\n\"\nconnection-state=connected";
+        subgraph cluster_dtlssrtpdec2_0x7f06e801d830_sink {
+          label="";
+          style="invis";
+          _proxypad13_0x5641244e5b20 [color=black, fillcolor="#ddddff", label="proxypad13\n[>][bfb]", height="0.2", style="filled,solid"];
+        dtlssrtpdec2_0x7f06e801d830_sink_0x7f06e801b160 -> _proxypad13_0x5641244e5b20 [style=dashed, minlen=0]
+          dtlssrtpdec2_0x7f06e801d830_sink_0x7f06e801b160 [color=black, fillcolor="#ddddff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        subgraph cluster_dtlssrtpdec2_0x7f06e801d830_src {
+          label="";
+          style="invis";
+          _proxypad8_0x5641244e5660 [color=black, fillcolor="#ffdddd", label="proxypad8\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad8_0x5641244e5660 -> dtlssrtpdec2_0x7f06e801d830_rtp_src_0x7f06e801ac80 [style=dashed, minlen=0]
+          dtlssrtpdec2_0x7f06e801d830_rtp_src_0x7f06e801ac80 [color=black, fillcolor="#ffdddd", label="rtp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+          _proxypad10_0x5641244e58c0 [color=black, fillcolor="#ffdddd", label="proxypad10\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad10_0x5641244e58c0 -> dtlssrtpdec2_0x7f06e801d830_rtcp_src_0x7f06e801aef0 [style=dashed, minlen=0]
+          dtlssrtpdec2_0x7f06e801d830_rtcp_src_0x7f06e801aef0 [color=black, fillcolor="#ffdddd", label="rtcp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+          _proxypad42_0x7f06a0035620 [color=black, fillcolor="#ffdddd", label="proxypad42\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad42_0x7f06a0035620 -> dtlssrtpdec2_0x7f06e801d830_data_src_0x7f06e805ec90 [style=dashed, minlen=0]
+          dtlssrtpdec2_0x7f06e801d830_data_src_0x7f06e805ec90 [color=black, fillcolor="#ffdddd", label="data_src\n[>][bfb]", height="0.2", style="filled,dashed"];
+        }
+
+        dtlssrtpdec2_0x7f06e801d830_sink_0x7f06e801b160 -> dtlssrtpdec2_0x7f06e801d830_rtp_src_0x7f06e801ac80 [style="invis"];
+        fillcolor="#ffffff";
+        subgraph cluster_srtpdec1_0x5641244e6b50 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstSrtpDec\nsrtpdec1\n[>]";
+          subgraph cluster_srtpdec1_0x5641244e6b50_sink {
+            label="";
+            style="invis";
+            srtpdec1_0x5641244e6b50_rtp_sink_0x7f06a000e4e0 [color=black, fillcolor="#aaaaff", label="rtp_sink\n[>][bfb]", height="0.2", style="filled,solid"];
+            srtpdec1_0x5641244e6b50_rtcp_sink_0x7f06a000e980 [color=black, fillcolor="#aaaaff", label="rtcp_sink\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          subgraph cluster_srtpdec1_0x5641244e6b50_src {
+            label="";
+            style="invis";
+            srtpdec1_0x5641244e6b50_rtp_src_0x7f06a000e730 [color=black, fillcolor="#ffaaaa", label="rtp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+            srtpdec1_0x5641244e6b50_rtcp_src_0x7f06a000ebd0 [color=black, fillcolor="#ffaaaa", label="rtcp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          srtpdec1_0x5641244e6b50_rtp_sink_0x7f06a000e4e0 -> srtpdec1_0x5641244e6b50_rtp_src_0x7f06a000e730 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        srtpdec1_0x5641244e6b50_rtp_src_0x7f06a000e730 -> _proxypad8_0x5641244e5660 [label="application/x-rtp\l"]
+        srtpdec1_0x5641244e6b50_rtcp_src_0x7f06a000ebd0 -> _proxypad10_0x5641244e58c0 [label="application/x-rtcp\l"]
+        subgraph cluster_dtlsdec1_0x5641244e6cb0 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstDtlsDec\ndtlsdec1\n[>]\nconnection-id=\"rtp_0_2206395326\"\npem=\"-----BEGIN CERTIFICATE-----\\nMIICpzCCAY+gAwIBAgIJAIGRTrfaaNwuMA0GCSqGSIb3DQEBCwUAMBMxETAPBgNV\\nBAMMCFNDb0tZTk4zMB4XDTIyMDUxOTEwMjcxMVoXDTIzMDUxOTEwMjcxMVowEzER\\nMA8GA1UEAwwIU0NvS1lOTjMwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIB\\nAQC8XGW4Qiz3tqLwzthiV76mmin3ufZyBBKU/EuKpVg4eAZU60l9lvrzYPmV4ro2\\nx4rreKWBt710lkRMVW9e9CSAzQG4z3/YUfNeXiXss/sDXOTp3BUz5PMQWR0X66cl\\nj3P06AuOmZLJ9uqFfxlUcsbki/vYaOOlf+arhaQbldBxKzsEb52L3ot3LSmMCHcf\\njDWbCmEwnQSjAReUE+BvIA8rYEd+8KdcjaCEj1IE+3Lce2KxzkFy98IQKC3XE4et\\npNqTHdPp+SJEKD6nW+CSLMXw67h+A0kzmbxxwTBj/szL0QeGodoVCvJvF8UMTg2y\\nyUUNh49E4RaQwA55W7jzE+alAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAFxvaaHq\\ntSW5z6JzDUBEZvfaKHf79+BlWQVUT4fUUVx7I42zMCHyUJVA4bHOI58OKXsssVlx\\nwLMlEZbheM1Evqbrc4w2N/+r+MtYaulqEHnAUKsnuRgurWOnk3OPdQ+xj4xqA/i4\\nkYuHJBrCO2LjYz+Gm+YJi247fHuUP1yYFwPyMNDbtIJVcyXlhF7obVh68RZ3bZGt\\nMdcQ2a9VTe44DZWkFwERKOoXy2jWiUenSc4feYhoidtNp4ME9ItVGq4qXsFQGynk\\ntTmqYmZbOn50qw9M+msy0f9K4tw/fG/MmsGkSTUVg4VBhh9haBUDsK4J7C7hJ81p\\najfZ8rC1VNWHCLs=\\n-----END CERTIFICATE-----\\n\"\npeer-pem=\"-----BEGIN CERTIFICATE-----\\nMIIBLjCB1qADAgECAgUAwWp+KzAJBgcqhkjOPQQBMCAxDjAMBgNVBAoMBUphbnVz\\nMQ4wDAYDVQQDDAVKYW51czAeFw0yMTA0MTIxODE3NDZaFw0yMzA0MTIxODE3NDZa\\nMCAxDjAMBgNVBAoMBUphbnVzMQ4wDAYDVQQDDAVKYW51czBZMBMGByqGSM49AgEG\\nCCqGSM49AwEHA0IABB1VH7rC/B9H3D9q0khWA11FbMTWLdZ8xCtnQt6QHQ5qDv5Y\\nf/uEDgIpo32CFJNaOjcyRQ4ZEG2F0KreUzNC7t8wCQYHKoZIzj0EAQNIADBFAiEA\\n1tLkHph9cY2RHTamhJmBetmcr/Z4LVDSt1LFnbsRCzACICw0Pgi+fMHMafhx9Omb\\ntasS9HTHRbggqq+zgcjdMiaR\\n-----END CERTIFICATE-----\\n\"\ndecoder-key=EMPTY\nsrtp-cipher=1\nsrtp-auth=2\nconnection-state=connected";
+          subgraph cluster_dtlsdec1_0x5641244e6cb0_sink {
+            label="";
+            style="invis";
+            dtlsdec1_0x5641244e6cb0_sink_0x7f06a000f510 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          subgraph cluster_dtlsdec1_0x5641244e6cb0_src {
+            label="";
+            style="invis";
+            dtlsdec1_0x5641244e6cb0_src_0x7f06b803cb10 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,dashed"];
+          }
+
+          dtlsdec1_0x5641244e6cb0_sink_0x7f06a000f510 -> dtlsdec1_0x5641244e6cb0_src_0x7f06b803cb10 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        dtlsdec1_0x5641244e6cb0_src_0x7f06b803cb10 -> _proxypad42_0x7f06a0035620 [label="ANY"]
+        subgraph cluster_dtlssrtpdemux1_0x7f06bc006d80 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstDtlsSrtpDemux\ndtlssrtpdemux1\n[>]";
+          subgraph cluster_dtlssrtpdemux1_0x7f06bc006d80_sink {
+            label="";
+            style="invis";
+            dtlssrtpdemux1_0x7f06bc006d80_sink_0x7f06a000ee20 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          subgraph cluster_dtlssrtpdemux1_0x7f06bc006d80_src {
+            label="";
+            style="invis";
+            dtlssrtpdemux1_0x7f06bc006d80_rtp_src_0x7f06a000f070 [color=black, fillcolor="#ffaaaa", label="rtp_src\n[>][bfb]", height="0.2", style="filled,solid"];
+            dtlssrtpdemux1_0x7f06bc006d80_dtls_src_0x7f06a000f2c0 [color=black, fillcolor="#ffaaaa", label="dtls_src\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          dtlssrtpdemux1_0x7f06bc006d80_sink_0x7f06a000ee20 -> dtlssrtpdemux1_0x7f06bc006d80_rtp_src_0x7f06a000f070 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        _proxypad13_0x5641244e5b20 -> dtlssrtpdemux1_0x7f06bc006d80_sink_0x7f06a000ee20 [label="application/x-rtp\l"]
+        dtlssrtpdemux1_0x7f06bc006d80_rtp_src_0x7f06a000f070 -> srtpdec1_0x5641244e6b50_rtp_sink_0x7f06a000e4e0 [labeldistance="10", labelangle="0", label="                                                  ", taillabel="application/x-rtp\lapplication/x-rtcp\lapplication/x-srtp\lapplication/x-srtcp\l", headlabel="application/x-srtp\l"]
+        dtlssrtpdemux1_0x7f06bc006d80_dtls_src_0x7f06a000f2c0 -> dtlsdec1_0x5641244e6cb0_sink_0x7f06a000f510 [label="application/x-dtls\l"]
+      }
+
+      dtlssrtpdec2_0x7f06e801d830_rtp_src_0x7f06e801ac80 -> _proxypad40_0x7f06a0031d50 [label="application/x-rtp\l"]
+      dtlssrtpdec2_0x7f06e801d830_rtcp_src_0x7f06e801aef0 -> _proxypad41_0x7f06a00340c0 [label="application/x-rtcp\l"]
+      dtlssrtpdec2_0x7f06e801d830_data_src_0x7f06e805ec90 -> _proxypad43_0x7f06a0035880 [label="ANY"]
+    }
+
+    transportreceivebin2_0x7f06e80109f0_rtcp_src_0x7f06e8051650 -> rtpbin_0x56412448e390_recv_rtcp_sink_0_0x7f06e805f170 [label="application/x-rtcp\l"]
+    subgraph cluster_transportsendbin1_0x7f06e801da10 {
+      fontname="Bitstream Vera Sans";
+      fontsize="8";
+      style="filled,rounded";
+      color=black;
+      label="TransportSendBin\ntransportsendbin1\n[>]\nstream=(TransportStream) transportstream1";
+      subgraph cluster_transportsendbin1_0x7f06e801da10_sink {
+        label="";
+        style="invis";
+        _proxypad24_0x7f06b8015d90 [color=black, fillcolor="#ddddff", label="proxypad24\n[>][bfb]", height="0.2", style="filled,solid"];
+      transportsendbin1_0x7f06e801da10_rtp_sink_0x7f06e804f3e0 -> _proxypad24_0x7f06b8015d90 [style=dashed, minlen=0]
+        transportsendbin1_0x7f06e801da10_rtp_sink_0x7f06e804f3e0 [color=black, fillcolor="#ddddff", label="rtp_sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad27_0x7f06a0030330 [color=black, fillcolor="#ddddff", label="proxypad27\n[>][bfb]", height="0.2", style="filled,solid"];
+      transportsendbin1_0x7f06e801da10_data_sink_0x7f06e804f8c0 -> _proxypad27_0x7f06a0030330 [style=dashed, minlen=0]
+        transportsendbin1_0x7f06e801da10_data_sink_0x7f06e804f8c0 [color=black, fillcolor="#ddddff", label="data_sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad31_0x7f06a0031af0 [color=black, fillcolor="#ddddff", label="proxypad31\n[>][bfb]", height="0.2", style="filled,solid"];
+      transportsendbin1_0x7f06e801da10_rtcp_sink_0x7f06e8051170 -> _proxypad31_0x7f06a0031af0 [style=dashed, minlen=0]
+        transportsendbin1_0x7f06e801da10_rtcp_sink_0x7f06e8051170 [color=black, fillcolor="#ddddff", label="rtcp_sink\n[>][bfb]", height="0.2", style="filled,solid"];
+      }
+
+      fillcolor="#ffffff";
+      subgraph cluster_nicesink2_0x7f06a0029920 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstNiceSink\nnicesink2\n[>]\nsync=FALSE\nasync=FALSE\nenable-last-sample=FALSE\nagent=((NiceAgent*) 0x564124497150)\nstream=1\ncomponent=1";
+        subgraph cluster_nicesink2_0x7f06a0029920_sink {
+          label="";
+          style="invis";
+          nicesink2_0x7f06a0029920_sink_0x7f06e8046c40 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        fillcolor="#aaaaff";
+      }
+
+      subgraph cluster_dtlssrtpenc1_0x7f06e8010800 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstDtlsSrtpEnc\ndtlssrtpenc1\n[>]\nconnection-id=\"rtp_0_2206395326\"\nconnection-state=connected";
+        subgraph cluster_dtlssrtpenc1_0x7f06e8010800_sink {
+          label="";
+          style="invis";
+          _proxypad20_0x7f06b8015b30 [color=black, fillcolor="#ddddff", label="proxypad20\n[>][bfb]", height="0.2", style="filled,solid"];
+        dtlssrtpenc1_0x7f06e8010800_rtp_sink_0_0x7f06e804f170 -> _proxypad20_0x7f06b8015b30 [style=dashed, minlen=0]
+          dtlssrtpenc1_0x7f06e8010800_rtp_sink_0_0x7f06e804f170 [color=black, fillcolor="#ddddff", label="rtp_sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+          _proxypad26_0x7f06a00300d0 [color=black, fillcolor="#ddddff", label="proxypad26\n[>][bfb]", height="0.2", style="filled,solid"];
+        dtlssrtpenc1_0x7f06e8010800_data_sink_0x7f06e804f650 -> _proxypad26_0x7f06a00300d0 [style=dashed, minlen=0]
+          dtlssrtpenc1_0x7f06e8010800_data_sink_0x7f06e804f650 [color=black, fillcolor="#ddddff", label="data_sink\n[>][bfb]", height="0.2", style="filled,dashed"];
+          _proxypad30_0x7f06a0031890 [color=black, fillcolor="#ddddff", label="proxypad30\n[>][bfb]", height="0.2", style="filled,solid"];
+        dtlssrtpenc1_0x7f06e8010800_rtcp_sink_0_0x7f06e8050f00 -> _proxypad30_0x7f06a0031890 [style=dashed, minlen=0]
+          dtlssrtpenc1_0x7f06e8010800_rtcp_sink_0_0x7f06e8050f00 [color=black, fillcolor="#ddddff", label="rtcp_sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+        }
+
+        subgraph cluster_dtlssrtpenc1_0x7f06e8010800_src {
+          label="";
+          style="invis";
+          _proxypad3_0x5641244e5400 [color=black, fillcolor="#ffdddd", label="proxypad3\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad3_0x5641244e5400 -> dtlssrtpenc1_0x7f06e8010800_src_0x7f06e801aa10 [style=dashed, minlen=0]
+          dtlssrtpenc1_0x7f06e8010800_src_0x7f06e801aa10 [color=black, fillcolor="#ffdddd", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        dtlssrtpenc1_0x7f06e8010800_rtp_sink_0_0x7f06e804f170 -> dtlssrtpenc1_0x7f06e8010800_src_0x7f06e801aa10 [style="invis"];
+        fillcolor="#ffffff";
+        subgraph cluster_clocksync_0_0x7f06e804a870 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstClockSync\nclocksync_0\n[>]\nsync=FALSE";
+          subgraph cluster_clocksync_0_0x7f06e804a870_sink {
+            label="";
+            style="invis";
+            clocksync_0_0x7f06e804a870_sink_0x7f06e8046e90 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          subgraph cluster_clocksync_0_0x7f06e804a870_src {
+            label="";
+            style="invis";
+            clocksync_0_0x7f06e804a870_src_0x7f06e80470e0 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          clocksync_0_0x7f06e804a870_sink_0x7f06e8046e90 -> clocksync_0_0x7f06e804a870_src_0x7f06e80470e0 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        clocksync_0_0x7f06e804a870_src_0x7f06e80470e0 -> funnel1_0x7f06bc006c60_funnelpad5_0x7f06b8034c30 [label="application/x-srtp\l            extmap-1: http://www.ietf.org/id...\l            srtp-key: 1b301ce2d01b50d1377a43...\l         srtp-cipher: aes-128-icm\l           srtp-auth: hmac-sha1-80\l        srtcp-cipher: aes-128-icm\l          srtcp-auth: hmac-sha1-80\l"]
+        subgraph cluster_funnel1_0x7f06bc006c60 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstFunnel\nfunnel1\n[>]";
+          subgraph cluster_funnel1_0x7f06bc006c60_sink {
+            label="";
+            style="invis";
+            funnel1_0x7f06bc006c60_funnelpad1_0x7f06a000e290 [color=black, fillcolor="#aaaaff", label="funnelpad1\n[>][bfb]", height="0.2", style="filled,dashed"];
+            funnel1_0x7f06bc006c60_funnelpad5_0x7f06b8034c30 [color=black, fillcolor="#aaaaff", label="funnelpad5\n[>][bfb]", height="0.2", style="filled,dashed"];
+            funnel1_0x7f06bc006c60_funnelpad8_0x7f06b8036a20 [color=black, fillcolor="#aaaaff", label="funnelpad8\n[>][bfb]", height="0.2", style="filled,dashed"];
+          }
+
+          subgraph cluster_funnel1_0x7f06bc006c60_src {
+            label="";
+            style="invis";
+            funnel1_0x7f06bc006c60_src_0x7f06a000e040 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          funnel1_0x7f06bc006c60_funnelpad1_0x7f06a000e290 -> funnel1_0x7f06bc006c60_src_0x7f06a000e040 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        funnel1_0x7f06bc006c60_src_0x7f06a000e040 -> _proxypad3_0x5641244e5400 [label="application/x-srtp\l            extmap-1: http://www.ietf.org/id...\l            srtp-key: 1b301ce2d01b50d1377a43...\l         srtp-cipher: aes-128-icm\l           srtp-auth: hmac-sha1-80\l        srtcp-cipher: aes-128-icm\l          srtcp-auth: hmac-sha1-80\l"]
+        subgraph cluster_srtpenc1_0x7f06a000b000 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstSrtpEnc\nsrtpenc1\n[>]\nkey=((GstBuffer*) 0x7f066400e120)";
+          subgraph cluster_srtpenc1_0x7f06a000b000_sink {
+            label="";
+            style="invis";
+            srtpenc1_0x7f06a000b000_rtp_sink_0_0x7f06e8047330 [color=black, fillcolor="#aaaaff", label="rtp_sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+            srtpenc1_0x7f06a000b000_rtcp_sink_0_0x7f06b80350d0 [color=black, fillcolor="#aaaaff", label="rtcp_sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+          }
+
+          subgraph cluster_srtpenc1_0x7f06a000b000_src {
+            label="";
+            style="invis";
+            srtpenc1_0x7f06a000b000_rtp_src_0_0x7f06b80349e0 [color=black, fillcolor="#ffaaaa", label="rtp_src_0\n[>][bfb]", height="0.2", style="filled,dotted"];
+            srtpenc1_0x7f06a000b000_rtcp_src_0_0x7f06b80367d0 [color=black, fillcolor="#ffaaaa", label="rtcp_src_0\n[>][bfb]", height="0.2", style="filled,dotted"];
+          }
+
+          srtpenc1_0x7f06a000b000_rtp_sink_0_0x7f06e8047330 -> srtpenc1_0x7f06a000b000_rtp_src_0_0x7f06b80349e0 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        _proxypad20_0x7f06b8015b30 -> srtpenc1_0x7f06a000b000_rtp_sink_0_0x7f06e8047330 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+        srtpenc1_0x7f06a000b000_rtp_src_0_0x7f06b80349e0 -> clocksync_0_0x7f06e804a870_sink_0x7f06e8046e90 [label="application/x-srtp\l            extmap-1: http://www.ietf.org/id...\l            srtp-key: 1b301ce2d01b50d1377a43...\l         srtp-cipher: aes-128-icm\l           srtp-auth: hmac-sha1-80\l        srtcp-cipher: aes-128-icm\l          srtcp-auth: hmac-sha1-80\l"]
+        _proxypad30_0x7f06a0031890 -> srtpenc1_0x7f06a000b000_rtcp_sink_0_0x7f06b80350d0 [label="application/x-rtcp\l"]
+        srtpenc1_0x7f06a000b000_rtcp_src_0_0x7f06b80367d0 -> funnel1_0x7f06bc006c60_funnelpad8_0x7f06b8036a20 [label="application/x-srtcp\l            srtp-key: 1b301ce2d01b50d1377a43...\l         srtp-cipher: aes-128-icm\l           srtp-auth: hmac-sha1-80\l        srtcp-cipher: aes-128-icm\l          srtcp-auth: hmac-sha1-80\l"]
+        subgraph cluster_dtlsenc1_0x7f06e8015620 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstDtlsEnc\ndtlsenc1\n[>]\nconnection-id=\"rtp_0_2206395326\"\nencoder-key=((GstBuffer*) 0x7f066400e120)\nsrtp-cipher=1\nsrtp-auth=2\nconnection-state=connected";
+          subgraph cluster_dtlsenc1_0x7f06e8015620_sink {
+            label="";
+            style="invis";
+            dtlsenc1_0x7f06e8015620_sink_0x7f06b8034e80 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,dashed"];
+          }
+
+          subgraph cluster_dtlsenc1_0x7f06e8015620_src {
+            label="";
+            style="invis";
+            dtlsenc1_0x7f06e8015620_src_0x7f06e8019d90 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb][T]", height="0.2", style="filled,solid"];
+          }
+
+          dtlsenc1_0x7f06e8015620_sink_0x7f06b8034e80 -> dtlsenc1_0x7f06e8015620_src_0x7f06e8019d90 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        dtlsenc1_0x7f06e8015620_src_0x7f06e8019d90 -> funnel1_0x7f06bc006c60_funnelpad1_0x7f06a000e290 [label="application/x-dtls\l"]
+        _proxypad26_0x7f06a00300d0 -> dtlsenc1_0x7f06e8015620_sink_0x7f06b8034e80 [label="ANY"]
+      }
+
+      dtlssrtpenc1_0x7f06e8010800_src_0x7f06e801aa10 -> nicesink2_0x7f06a0029920_sink_0x7f06e8046c40 [label="application/x-srtp\l            extmap-1: http://www.ietf.org/id...\l            srtp-key: 1b301ce2d01b50d1377a43...\l         srtp-cipher: aes-128-icm\l           srtp-auth: hmac-sha1-80\l        srtcp-cipher: aes-128-icm\l          srtcp-auth: hmac-sha1-80\l"]
+      _proxypad24_0x7f06b8015d90 -> dtlssrtpenc1_0x7f06e8010800_rtp_sink_0_0x7f06e804f170 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+      _proxypad27_0x7f06a0030330 -> dtlssrtpenc1_0x7f06e8010800_data_sink_0x7f06e804f650 [label="ANY"]
+      _proxypad31_0x7f06a0031af0 -> dtlssrtpenc1_0x7f06e8010800_rtcp_sink_0_0x7f06e8050f00 [label="application/x-rtcp\l"]
+    }
+
+    subgraph cluster_rtpbin_0x56412448e390 {
+      fontname="Bitstream Vera Sans";
+      fontsize="8";
+      style="filled,rounded";
+      color=black;
+      label="GstRtpBin\nrtpbin\n[>]\nsdes=application/x-rtp-source-sdes, cname=(string)\\\"user1912672088\\\\@host-bc039426\\\", tool=(string)GStreamer;\ndo-lost=TRUE\nrtp-profile=savpf\nfec-decoders=application/x-rtp-fec-decoders;\nfec-encoders=application/x-rtp-fec-encoders;";
+      subgraph cluster_rtpbin_0x56412448e390_sink {
+        label="";
+        style="invis";
+        _proxypad48_0x7f06a0035ae0 [color=black, fillcolor="#ddddff", label="proxypad48\n[>][bfb]", height="0.2", style="filled,solid"];
+      rtpbin_0x56412448e390_recv_rtcp_sink_0_0x7f06e805f170 -> _proxypad48_0x7f06a0035ae0 [style=dashed, minlen=0]
+        rtpbin_0x56412448e390_recv_rtcp_sink_0_0x7f06e805f170 [color=black, fillcolor="#ddddff", label="recv_rtcp_sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+        _proxypad60_0x7f06e807ba90 [color=black, fillcolor="#ddddff", label="proxypad60\n[>][bfb]", height="0.2", style="filled,solid"];
+      rtpbin_0x56412448e390_send_rtp_sink_0_0x7f06a005c7b0 -> _proxypad60_0x7f06e807ba90 [style=dashed, minlen=0]
+        rtpbin_0x56412448e390_send_rtp_sink_0_0x7f06a005c7b0 [color=black, fillcolor="#ddddff", label="send_rtp_sink_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+      }
+
+      subgraph cluster_rtpbin_0x56412448e390_src {
+        label="";
+        style="invis";
+        _proxypad49_0x7f06a0035d40 [color=black, fillcolor="#ffdddd", label="proxypad49\n[>][bfb]", height="0.2", style="filled,solid"];
+      _proxypad49_0x7f06a0035d40 -> rtpbin_0x56412448e390_send_rtcp_src_0_0x7f06e805f3e0 [style=dashed, minlen=0]
+        rtpbin_0x56412448e390_send_rtcp_src_0_0x7f06e805f3e0 [color=black, fillcolor="#ffdddd", label="send_rtcp_src_0\n[>][bfb]", height="0.2", style="filled,dashed"];
+        _proxypad59_0x7f06e807b830 [color=black, fillcolor="#ffdddd", label="proxypad59\n[>][bfb]", height="0.2", style="filled,solid"];
+      _proxypad59_0x7f06e807b830 -> rtpbin_0x56412448e390_send_rtp_src_0_0x7f06a005c540 [style=dashed, minlen=0]
+        rtpbin_0x56412448e390_send_rtp_src_0_0x7f06a005c540 [color=black, fillcolor="#ffdddd", label="send_rtp_src_0\n[>][bfb]", height="0.2", style="filled,dotted"];
+      }
+
+      rtpbin_0x56412448e390_recv_rtcp_sink_0_0x7f06e805f170 -> rtpbin_0x56412448e390_send_rtcp_src_0_0x7f06e805f3e0 [style="invis"];
+      fillcolor="#ffffff";
+      subgraph cluster_bin0_0x7f06a005a0c0 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstBin\nbin0\n[>]";
+        subgraph cluster_bin0_0x7f06a005a0c0_sink {
+          label="";
+          style="invis";
+          _proxypad56_0x7f06e807b5d0 [color=black, fillcolor="#ddddff", label="proxypad56\n[>][bfb]", height="0.2", style="filled,solid"];
+        bin0_0x7f06a005a0c0_sink_0_0x7f06a005c2d0 -> _proxypad56_0x7f06e807b5d0 [style=dashed, minlen=0]
+          bin0_0x7f06a005a0c0_sink_0_0x7f06a005c2d0 [color=black, fillcolor="#ddddff", label="sink_0\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        subgraph cluster_bin0_0x7f06a005a0c0_src {
+          label="";
+          style="invis";
+          _proxypad55_0x7f06e807b370 [color=black, fillcolor="#ffdddd", label="proxypad55\n[>][bfb]", height="0.2", style="filled,solid"];
+        _proxypad55_0x7f06e807b370 -> bin0_0x7f06a005a0c0_src_0_0x7f06a005c060 [style=dashed, minlen=0]
+          bin0_0x7f06a005a0c0_src_0_0x7f06a005c060 [color=black, fillcolor="#ffdddd", label="src_0\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        bin0_0x7f06a005a0c0_sink_0_0x7f06a005c2d0 -> bin0_0x7f06a005a0c0_src_0_0x7f06a005c060 [style="invis"];
+        fillcolor="#ffffff";
+        subgraph cluster_rtprtxsend0_0x5641243375c0 {
+          fontname="Bitstream Vera Sans";
+          fontsize="8";
+          style="filled,rounded";
+          color=black;
+          label="GstRtpRtxSend\nrtprtxsend0\n[>]\npayload-type-map=application/x-rtp-pt-map, 96=(uint)97;\nmax-size-packets=500";
+          subgraph cluster_rtprtxsend0_0x5641243375c0_sink {
+            label="";
+            style="invis";
+            rtprtxsend0_0x5641243375c0_sink_0x7f06a0054360 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+          }
+
+          subgraph cluster_rtprtxsend0_0x5641243375c0_src {
+            label="";
+            style="invis";
+            rtprtxsend0_0x5641243375c0_src_0x7f06a0054110 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb][T]", height="0.2", style="filled,solid"];
+          }
+
+          rtprtxsend0_0x5641243375c0_sink_0x7f06a0054360 -> rtprtxsend0_0x5641243375c0_src_0x7f06a0054110 [style="invis"];
+          fillcolor="#aaffaa";
+        }
+
+        rtprtxsend0_0x5641243375c0_src_0x7f06a0054110 -> _proxypad55_0x7f06e807b370 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+        _proxypad56_0x7f06e807b5d0 -> rtprtxsend0_0x5641243375c0_sink_0x7f06a0054360 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+      }
+
+      bin0_0x7f06a005a0c0_src_0_0x7f06a005c060 -> rtpsession2_0x7f06e80656e0_send_rtp_sink_0x7f06a00545b0 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+      _proxypad60_0x7f06e807ba90 -> bin0_0x7f06a005a0c0_sink_0_0x7f06a005c2d0 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+      subgraph cluster_rtpstorage1_0x7f06bc006ea0 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstRtpStorage\nrtpstorage1\n[>]\nsize-time=250000000\ninternal-storage=((RtpStorage*) 0x7f06a0032b20)";
+        subgraph cluster_rtpstorage1_0x7f06bc006ea0_sink {
+          label="";
+          style="invis";
+          rtpstorage1_0x7f06bc006ea0_sink_0x7f06b8046780 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        subgraph cluster_rtpstorage1_0x7f06bc006ea0_src {
+          label="";
+          style="invis";
+          rtpstorage1_0x7f06bc006ea0_src_0x7f06b8046530 [color=black, fillcolor="#ffaaaa", label="src\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        rtpstorage1_0x7f06bc006ea0_sink_0x7f06b8046780 -> rtpstorage1_0x7f06bc006ea0_src_0x7f06b8046530 [style="invis"];
+        fillcolor="#aaffaa";
+      }
+
+      subgraph cluster_rtpssrcdemux2_0x7f06b8045cd0 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstRtpSsrcDemux\nrtpssrcdemux2\n[>]";
+        subgraph cluster_rtpssrcdemux2_0x7f06b8045cd0_sink {
+          label="";
+          style="invis";
+          rtpssrcdemux2_0x7f06b8045cd0_sink_0x7f06b803cd60 [color=black, fillcolor="#aaaaff", label="sink\n[>][bfb]", height="0.2", style="filled,solid"];
+          rtpssrcdemux2_0x7f06b8045cd0_rtcp_sink_0x7f06b80462e0 [color=black, fillcolor="#aaaaff", label="rtcp_sink\n[>][bfb]", height="0.2", style="filled,solid"];
+        }
+
+        fillcolor="#aaaaff";
+      }
+
+      subgraph cluster_rtpsession2_0x7f06e80656e0 {
+        fontname="Bitstream Vera Sans";
+        fontsize="8";
+        style="filled,rounded";
+        color=black;
+        label="GstRtpSession\nrtpsession2\n[>]\nsdes=application/x-rtp-source-sdes, cname=(string)\\\"user1912672088\\\\@host-bc039426\\\", tool=(string)GStreamer;\nnum-sources=3\nnum-active-sources=1\ninternal-session=((RTPSession*) 0x7f06e8068a70)\ntwcc-stats=RTPTWCCStats, bitrate-sent=(uint)2644759, bitrate-recv=(uint)2659400, packets-sent=(uint)38, packets-recv=(uint)38, packet-loss-pct=(double)0, avg-delta-of-delta=(gint64)-22221;\nrtp-profile=savpf";
+        subgraph cluster_rtpsession2_0x7f06e80656e0_sink {
+          label="";
+          style="invis";
+          rtpsession2_0x7f06e80656e0_recv_rtcp_sink_0x7f06b80469d0 [color=black, fillcolor="#aaaaff", label="recv_rtcp_sink\n[>][bfb]", height="0.2", style="filled,dashed"];
+          rtpsession2_0x7f06e80656e0_send_rtp_sink_0x7f06a00545b0 [color=black, fillcolor="#aaaaff", label="send_rtp_sink\n[>][bfb]", height="0.2", style="filled,dashed"];
+        }
+
+        subgraph cluster_rtpsession2_0x7f06e80656e0_src {
+          label="";
+          style="invis";
+          rtpsession2_0x7f06e80656e0_sync_src_0x7f06a0044150 [color=black, fillcolor="#ffaaaa", label="sync_src\n[>][bfb]", height="0.2", style="filled,dotted"];
+          rtpsession2_0x7f06e80656e0_send_rtcp_src_0x7f06a00443a0 [color=black, fillcolor="#ffaaaa", label="send_rtcp_src\n[>][bfb]", height="0.2", style="filled,dashed"];
+          rtpsession2_0x7f06e80656e0_send_rtp_src_0x7f06a0055140 [color=black, fillcolor="#ffaaaa", label="send_rtp_src\n[>][bfb]", height="0.2", style="filled,dotted"];
+        }
+
+        rtpsession2_0x7f06e80656e0_recv_rtcp_sink_0x7f06b80469d0 -> rtpsession2_0x7f06e80656e0_sync_src_0x7f06a0044150 [style="invis"];
+        fillcolor="#aaffaa";
+      }
+
+      _proxypad48_0x7f06a0035ae0 -> rtpsession2_0x7f06e80656e0_recv_rtcp_sink_0x7f06b80469d0 [label="application/x-rtcp\l"]
+      rtpsession2_0x7f06e80656e0_sync_src_0x7f06a0044150 -> rtpssrcdemux2_0x7f06b8045cd0_rtcp_sink_0x7f06b80462e0 [label="application/x-rtcp\l"]
+      rtpsession2_0x7f06e80656e0_send_rtcp_src_0x7f06a00443a0 -> _proxypad49_0x7f06a0035d40 [label="application/x-rtcp\l"]
+      rtpsession2_0x7f06e80656e0_send_rtp_src_0x7f06a0055140 -> _proxypad59_0x7f06e807b830 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+    }
+
+    rtpbin_0x56412448e390_send_rtcp_src_0_0x7f06e805f3e0 -> transportsendbin1_0x7f06e801da10_rtcp_sink_0x7f06e8051170 [label="application/x-rtcp\l"]
+    rtpbin_0x56412448e390_send_rtp_src_0_0x7f06a005c540 -> transportsendbin1_0x7f06e801da10_rtp_sink_0x7f06e804f3e0 [label="application/x-rtp\l            extmap-1: http://www.ietf.org/id...\l"]
+  }
+
+}

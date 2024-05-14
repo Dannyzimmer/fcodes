@@ -1,0 +1,7 @@
+digraph {
+  quiver -> 0.0 [arrowsize=0.0]
+  quiver -> 0.5 [arrowsize=0.5]
+  quiver -> 1
+  quiver -> 2 [arrowsize=2]
+  quiver -> 3 [arrowsize=3]
+}

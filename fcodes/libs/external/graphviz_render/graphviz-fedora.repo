@@ -1,0 +1,41 @@
+[graphviz-stable]
+name=Graphviz - Fedora $releasever - $basearch
+baseurl=https://www2.graphviz.org/Packages/stable/fedora/$releasever/os/$basearch/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-stable-source]
+name=Graphviz - Fedora $releasever - Source
+baseurl=https://www2.graphviz.org/Packages/stable/fedora/$releasever/source
+enabled=0
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-stable-debuginfo] 
+name=Graphviz - Fedora - Debug 
+baseurl=https://www2.graphviz.org/Packages/stable/fedora/$releasever/debug/$basearch/
+enabled=0 
+gpgcheck=0 
+skip_if_unavailable=1
+
+[graphviz-development]
+name=Graphviz - Fedora $releasever - $basearch
+baseurl=https://www2.graphviz.org/Packages/development/fedora/$releasever/os/$basearch/
+enabled=0
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-development-source]
+name=Graphviz - Fedora $releasever - Source
+baseurl=https://www2.graphviz.org/Packages/development/fedora/$releasever/source/
+enabled=0
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-development-debuginfo] 
+name=Graphviz - Fedora - Debug 
+baseurl=https://www2.graphviz.org/Packages/development/fedora/$releasever/debug/$basearch/
+enabled=0 
+gpgcheck=0 
+skip_if_unavailable=1

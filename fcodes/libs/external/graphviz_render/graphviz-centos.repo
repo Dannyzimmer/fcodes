@@ -1,0 +1,41 @@
+[graphviz-stable]
+name=Graphviz - CentOS $releasever - $basearch
+baseurl=https://www2.graphviz.org/Packages/stable/centos/$releasever/os/$basearch/
+enabled=1
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-stable-source]
+name=Graphviz - CentOS $releasever - Source
+baseurl=https://www2.graphviz.org/Packages/stable/centos/$releasever/source
+enabled=0
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-stable-debuginfo] 
+name=Graphviz - CentOS - Debug 
+baseurl=https://www2.graphviz.org/Packages/stable/centos/$releasever/debug/$basearch/
+enabled=0 
+gpgcheck=0 
+skip_if_unavailable=1
+
+[graphviz-development]
+name=Graphviz - CentOS $releasever - $basearch
+baseurl=https://www2.graphviz.org/Packages/development/centos/$releasever/os/$basearch/
+enabled=0
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-development-source]
+name=Graphviz - CentOS $releasever - Source
+baseurl=https://www2.graphviz.org/Packages/development/centos/$releasever/source/
+enabled=0
+gpgcheck=0
+skip_if_unavailable=1
+
+[graphviz-development-debuginfo] 
+name=Graphviz - CentOS - Debug 
+baseurl=https://www2.graphviz.org/Packages/development/centos/$releasever/debug/$basearch/
+enabled=0 
+gpgcheck=0 
+skip_if_unavailable=1

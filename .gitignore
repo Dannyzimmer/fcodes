@@ -1,0 +1,11 @@
+__pycache__/
+*.py[cod]
+data.txt
+*.svg
+test.py
+example.gv
+*.txt
+*.gv
+*.pdf
+.vscode/
+.venv

@@ -1,0 +1,1299 @@
+stages:
+    - build_docker_images
+    - push_docker_images
+    - source
+    - build
+    - test
+    - deploy
+
+# generate doxygen documentation from sources for https://graphviz.gitlab.io/graphviz/doxygen/
+pages:
+    image: alpine
+    before_script:
+        - apk update; apk --quiet add python3 doxygen ttf-freefont graphviz
+    script:
+        - mkdir public
+        # Ideally it would be better to integrate pages and doxygen with autotools.
+        # But it is not trivial and the solution is not yet found.
+        # So workaround with sed is much more easier:
+        - sed "s/^\(PROJECT_NUMBER\)\s*=.*/\1=$(python3 gen_version.py)/" Doxyfile.in |
+              (cd ..; doxygen -q -)
+        - echo "Preview:" "https://${CI_PROJECT_NAMESPACE}.${CI_PAGES_DOMAIN}/-/${CI_PROJECT_NAME}/-/jobs/${CI_JOB_ID}/artifacts/public/doxygen/index.html"
+    artifacts:
+        paths:
+            - public
+
+portable-source:
+    # Doesn't have to wait for all the previous stages, only a docker image of
+    # ubuntu-20.04 is required
+    needs:
+      - docker_build_ubuntu-20.04
+    stage: source
+    tags:
+        - linux
+    image: "$CI_REGISTRY_IMAGE/ubuntu-20.04:$CI_COMMIT_SHA"
+    script:
+        - ./autogen.sh
+        - ./configure --enable-man-pdfs
+        - make dist
+        - make dist-xz
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+            - graphviz-*.tar.gz
+            - graphviz-*.tar.xz
+    except:
+        - tags
+
+.build_template: &rpm_build_definition
+    stage: build
+    script:
+        - logfile=`mktemp`
+        - ci/build.sh |& tee $logfile
+        - echo "$CI_JOB_NAME-warnings `grep -c 'warning:' $logfile`" | tee metrics.txt
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*.tar.xz
+            - Packages/*/*/*.rpm
+            - Metadata/*/*/configure.log
+            - GRAPHVIZ_VERSION
+        reports:
+            metrics: metrics.txt
+    except:
+        - tags
+    image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+
+.build_template: &deb_build_definition
+    stage: build
+    script:
+        - logfile=`mktemp`
+        - ci/build.sh |& tee $logfile
+        - echo "$CI_JOB_NAME-warnings `grep -c 'warning:' $logfile`" | tee metrics.txt
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*.tar.xz
+            - Packages/*/*/*deb
+            - Metadata/*/*/configure.log
+            - GRAPHVIZ_VERSION
+        reports:
+            metrics: metrics.txt
+    except:
+        - tags
+    image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+
+.build_template: &windows_build_definition
+    stage: build
+    needs: []
+    script:
+        - $ErrorActionPreference = "Stop"
+        # disable Windows Defender
+        - Add-MpPreference -ExclusionPath 'C:\'
+        - $PSDefaultParameterValues['Out-File:Encoding'] = 'utf8'
+        - nuget install python -ExcludeVersion -OutputDirectory C:\
+        - $env:Path = "C:\python\tools;" + $env:Path
+        - python --version
+        - python -m pip install --requirement requirements.txt
+        # Toolchain definitions
+        - if($Env:project_platform -eq "x64") {
+            $TARGET_ARCH = "x64";
+          }
+          else {
+            $TARGET_ARCH = "x86";
+          }
+        # Retrieve submodules, dependencies are stored there.
+        - git submodule update --init --depth 1
+        # Install and set PATH
+        - $Env:graphviz_install_dir = "C:\Graphviz"
+        # Build
+        - Set-ExecutionPolicy Bypass -Force -Scope Process
+        - $logfile = New-TemporaryFile
+        - windows/bin/setup-build-utilities.ps1 2>&1 | tee $logfile
+        - python ci/windows_build.py --build-system $env:build_system --platform $Env:project_platform --configuration $env:configuration --logfile $logfile
+        - $warnings_count = (Select-String -Pattern " warning " -Path $logfile).length
+        - echo "$CI_JOB_NAME-warnings $warnings_count" | tee metrics.txt
+        - python gen_version.py --output GRAPHVIZ_VERSION
+        # Package
+        - $Env:GV_VERSION=$( cat GRAPHVIZ_VERSION )
+        - >-
+            if($Env:project_platform -eq "x64") {
+                $API = "win64";
+            } else {
+                $API = "win32";
+            }
+        # Test
+        # Set up VCTools variables and import into PowerShell environment
+        - cmd.exe /c "call `"C:\Program Files (x86)\Microsoft Visual Studio\2019\BuildTools\VC\Auxiliary\Build\vcvarsall.bat`" $TARGET_ARCH && set > %temp%\vcvars.txt";
+        - >-
+            Get-Content "$env:temp\vcvars.txt" | Foreach-Object {
+              if ($_ -match "^([A-Za-z0-9_()]*)=(.*)$") {
+                Set-Content "env:\$($matches[1])" $matches[2];
+              }
+            }
+        - >-
+            if($env:build_system -eq "cmake") {
+              cd build;
+              $FILENAME = & invoke-Expression "Get-ChildItem Graphviz*.exe";
+              mv $FILENAME graphviz-install.exe;
+              # Install using installer and add bin directory to path.
+              # Piping the output of the installer to Out-Null, makes the script wait
+              # for the .exe to exit, instead continuing to the next command (which
+              # will then fail because the install hasn't finished)
+              ./graphviz-install.exe /S /D=$env:graphviz_install_dir | Out-Null;
+              mv graphviz-install.exe graphviz-install-$Env:GV_VERSION-$API.exe;
+              $env:Path = $env:graphviz_install_dir + "\bin" + ";" + $env:Path
+              cd ..;
+              $Env:INCLUDE += ";C:\Graphviz\include";
+              $Env:LIB += ";C:\Graphviz\lib";
+            }
+            elseif($env:build_system -eq "msbuild") {
+              # Append build destination to the PATH, configure dot and execute regression tests
+              # The following is per https://gitlab.com/graphviz/graphviz/-/merge_requests/1345
+              $env:Path = $env:CI_PROJECT_DIR + "\" + $env:configuration + "\Graphviz\bin" + ";" + $env:Path;
+            }
+        - python -m pytest --strict-markers --verbose --junitxml=report.xml ci/tests.py tests
+        # Create artifacts to archive
+        - $ID = "windows"
+        - $VERSION_ID = "10"
+        - $DIR = "Packages\${ID}\${VERSION_ID}\$env:build_system\$env:configuration"
+        - mkdir -p $DIR
+        - >-
+            if($env:build_system -eq "cmake") {
+                mv "build\*.exe" $DIR;
+            } else {
+                Compress-Archive -Path "$env:configuration\*" -DestinationPath "$DIR\graphviz-$Env:GV_VERSION-$API.zip";
+            }
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+        - Packages/*/*/*/*/*.exe
+        - Packages/*/*/*/*/*.zip
+        reports:
+            metrics: metrics.txt
+            junit: report.xml
+    tags:
+        - windows
+    except:
+        - tags
+
+.test_template: &test_definition
+    stage: test
+    script:
+        - ci/install-packages.sh
+        - export GV_VERSION=$( cat GRAPHVIZ_VERSION )
+        - python3 -m pytest --verbose --junitxml=report.xml ci/tests.py tests
+    artifacts:
+        reports:
+            junit: report.xml
+    except:
+        - tags
+
+.test_template_including_ctest: &test_definition_including_ctest
+    stage: test
+    script:
+        - ci/test_coverage.py --init
+        - pushd build
+        # Use GVBINDIR to specify where to generate and load config6
+        # since ctest sets LD_LIBRARY_PATH to point to all the
+        # locations where the libs reside before cpack copies them to
+        # the install directory. Without this Graphviz tries to use
+        # the directory lib/gvc/graphviz which does not exist.
+        - export GVBINDIR=$(pwd)/plugin/dot_layout
+        - cmd/dot/dot -v -c
+        - ctest --output-on-failure
+        - unset GVBINDIR
+        - popd
+        - ci/install-packages.sh
+        - export GV_VERSION=$( cat GRAPHVIZ_VERSION )
+        # Many of the tests run by pytest currently trigger ASan
+        # memory leak detections. Disable those for now.
+        - export ASAN_OPTIONS=detect_leaks=0
+        - export UBSAN_OPTIONS=print_stacktrace=1
+        - python3 -m pytest --verbose --junitxml=report.xml ci/tests.py tests
+        - ci/test_coverage.py --analyze
+    # enable test coverage visualization in MR diff view
+    coverage: '/  lines\.{6}: \d+\.\d+%/'
+    artifacts:
+        paths:
+            - coverage/**
+            - build/tests/test_artifacts/**
+        reports:
+            junit: [./report.xml, build/tests/test_*.xml]
+            coverage_report:
+              coverage_format: cobertura
+              path: coverage.xml
+    except:
+        - tags
+
+.linux_test_template: &linux_test_definition
+    <<: *test_definition
+    image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+
+.linux_test_template_including_ctest: &linux_test_definition_including_ctest
+    <<: *test_definition_including_ctest
+    image: "$CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA"
+
+centos7-build:
+    <<: *rpm_build_definition
+    needs:
+        - job: docker_build_centos7
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: centos7
+
+fedora37-build:
+    <<: *rpm_build_definition
+    needs:
+        - job: docker_build_fedora37
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora37
+
+fedora38-build:
+    <<: *rpm_build_definition
+    needs:
+        - job: docker_build_fedora38
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora38
+
+ubuntu-20.04-debug-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-20.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    before_script:
+        - export CFLAGS="-DDEBUG"
+        - export CXXFLAGS="-DDEBUG"
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-20.04
+
+ubuntu-20.04-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-20.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-20.04
+
+ubuntu-22.04-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-22.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-22.04-static-build:
+    <<: *deb_build_definition
+    before_script:
+        - export CONFIGURE_OPTIONS="--disable-shared --enable-static"
+    needs:
+        - job: docker_build_ubuntu-22.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            - Metadata/*/*/configure.log
+            - GRAPHVIZ_VERSION
+        reports:
+            metrics: metrics.txt
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-23.04-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-23.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-23.04
+
+out-of-source-build:
+    <<: *deb_build_definition
+    script:
+        - logfile=`mktemp`
+        - ci/out-of-source-build.sh |& tee $logfile
+        - echo "$CI_JOB_NAME-warnings `grep -c 'warning:' $logfile`" | tee metrics.txt
+    needs:
+        - job: docker_build_ubuntu-22.04
+          artifacts: false
+        - job: portable-source
+          artifacts: true
+    tags:
+        - linux
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        reports:
+            metrics: metrics.txt
+    variables:
+      IMAGE: ubuntu-22.04
+
+# We do the MinGW autotools builds in two steps in separate jobs to
+# get below the one hour per job limit of the GitLab shared Windows
+# runners
+
+windows-mingw32-build-step1-configure:
+    stage: build
+    needs:
+        - job: portable-source
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-configure.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+            - graphviz-*
+            - build
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw32-build-step2-make:
+    stage: build
+    needs:
+        - job: windows-mingw32-build-step1-configure
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - $Env:use_autogen = "yes"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-make.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw64-build-step1-configure:
+    stage: build
+    needs:
+        - job: portable-source
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-configure.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+            - graphviz-*
+            - build
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw64-build-step2-make:
+    stage: build
+    needs:
+        - job: windows-mingw64-build-step1-configure
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - $Env:use_autogen = "yes"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-make.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw64-static-build-step1-configure:
+    stage: build
+    needs:
+        - job: portable-source
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - $Env:CONFIGURE_OPTIONS = "--disable-shared --enable-static"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-configure.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+            - graphviz-*
+            - build
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw64-static-build-step2-make:
+    stage: build
+    needs:
+        - job: windows-mingw64-static-build-step1-configure
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - $Env:use_autogen = "yes"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-make.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw32-static-build-step1-configure:
+    stage: build
+    needs:
+        - job: portable-source
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - $Env:CONFIGURE_OPTIONS = "--disable-shared --enable-static"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-configure.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+            - graphviz-*
+            - build
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw32-static-build-step2-make:
+    stage: build
+    needs:
+        - job: windows-mingw32-static-build-step1-configure
+          artifacts: true
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "autotools"
+        - $Env:use_autogen = "yes"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-make.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-cygwin-build:
+    stage: build
+    needs:
+        - job: portable-source
+          artifacts: true
+    script:
+        # disable Windows Defender
+        - Add-MpPreference -ExclusionPath 'C:\'
+        - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
+        - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
+        - $env:Path = "C:\cygwin64\bin;" + $env:Path
+        - $Env:build_system = "autotools"
+        # change line endings from crlf to lf
+        - C:\cygwin64\bin\sed -i 's/\r//g' ci/*.sh
+        - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - GRAPHVIZ_VERSION
+            - Packages/*/*/*.xz
+    cache:
+        key: windows-cygwin-build
+        paths:
+            - ccache-cache
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-cygwin-build-using-autogen:
+    stage: build
+    needs: []
+    script:
+        # disable Windows Defender
+        - Add-MpPreference -ExclusionPath 'C:\'
+        - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
+        - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
+        - $env:Path = "C:\cygwin64\bin;" + $env:Path
+        - nuget install python -ExcludeVersion -OutputDirectory C:\
+        - $env:Path = "C:\python\tools;" + $env:Path
+        - python gen_version.py --output GRAPHVIZ_VERSION
+        - $Env:build_system = "autotools"
+        - $Env:use_autogen = "yes"
+        # change line endings from crlf to lf
+        - C:\cygwin64\bin\find . '(' -name Makefile.am -or -name "*.def" ')' -exec C:\cygwin64\bin\sed -i 's/\r//g' "{}" ';'
+        - C:\cygwin64\bin\sed -i 's/\r//g' autogen.sh ci/*.sh configure.ac lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
+        - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*.xz
+    cache:
+        key: windows-cygwin-build-using-autogen
+        paths:
+            - ccache-cache
+    tags:
+        - windows
+    except:
+        - tags
+
+ubuntu-20.04-cmake-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-20.04
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CMAKE_OPTIONS="-Dwith_smyrna=ON"
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-20.04
+
+ubuntu-22.04-cmake-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-22.04
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CMAKE_OPTIONS="-Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=ON"
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-23.04-cmake-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-23.04
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CMAKE_OPTIONS="-Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=ON"
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-23.04
+
+ubuntu-22.04-cmake-minimal-build:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-22.04
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CMAKE_OPTIONS=""
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Denable_ltdl=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_expat=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_digcola=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_ipsepcola=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_ortho=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_sfdp=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=OFF"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_zlib=OFF"
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-23.04-cmake-ASan-build-for-ctest:
+    <<: *deb_build_definition
+    needs:
+        - job: docker_build_ubuntu-23.04
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined -g -Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined -g -Werror -Wno-deprecated-declarations"
+        - export LDFLAGS="-fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined -g -Werror -Wno-deprecated-declarations"
+        - export UBSAN_OPTIONS=print_stacktrace=1
+        - export CMAKE_OPTIONS="-Duse_coverage=ON -Dwith_cxx_tests=ON -Dwith_cxx_api=ON"
+        - export CMAKE_OPTIONS="$CMAKE_OPTIONS -Dwith_smyrna=ON"
+    # override the deb_build_definition artifacts since we need more
+    # files from the build directory when running ctest in the test
+    # stage.
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            # the C++ test programs
+            - build/tests/test_*
+            # the common C++ test library
+            - build/tests/libtest_common.so
+            # the ctest files
+            - build/**/CTestTestfile.cmake
+            # archive all shared libraries produced directly by "cmake
+            # --build" (but not those in the install directory that
+            # cpack has copied). In the test stage, the test
+            # executables load them from those directory locations
+            # since LD_LIBRARY_PATH is automatically set up to contain
+            # them.
+            - build/lib/**/lib*.so.*
+            - build/plugin/**/lib*.so.*
+            # the coverage analysis needs the .gcno files
+            - build/**/*.gcno
+            # the dot program is needed to configure the plugins before running pre-install tests
+            - build/cmd/dot/dot
+            # the packages need to be installed for the post-install tests
+            - Packages/*/*/*deb
+        reports:
+            metrics: metrics.txt
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-23.04
+
+centos7-cmake-build:
+    <<: *rpm_build_definition
+    needs:
+        - job: docker_build_centos7
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations -Wno-error=missing-braces"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations -Wno-error=missing-braces"
+    tags:
+        - linux
+    variables:
+      IMAGE: centos7
+
+fedora37-cmake-build:
+    <<: *rpm_build_definition
+    needs:
+        - job: docker_build_fedora37
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CMAKE_OPTIONS="-Dwith_smyrna=ON"
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora37
+
+fedora38-cmake-build:
+    <<: *rpm_build_definition
+    needs:
+        - job: docker_build_fedora38
+          artifacts: false
+    before_script:
+        - export build_system="cmake"
+        # fail on any compiler warnings
+        - export CFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CXXFLAGS="-Werror -Wno-deprecated-declarations"
+        - export CMAKE_OPTIONS="-Dwith_smyrna=ON"
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora38
+
+windows-cmake-Win32-release-build:
+    <<: *windows_build_definition
+    before_script:
+        - $Env:generator = "Visual Studio 16 2019"
+        - $Env:project_platform = "Win32"
+        - $Env:configuration = "Release"
+        - $Env:build_system = "cmake"
+
+windows-cmake-Win32-debug-build:
+    <<: *windows_build_definition
+    before_script:
+        - $Env:generator = "Visual Studio 16 2019"
+        - $Env:project_platform = "Win32"
+        - $Env:configuration = "Debug"
+        - $Env:build_system = "cmake"
+
+windows-cmake-x64-release-build:
+    <<: *windows_build_definition
+    before_script:
+        - $Env:generator = "Visual Studio 16 2019"
+        - $Env:project_platform = "x64"
+        - $Env:configuration = "Release"
+        - $Env:build_system = "cmake"
+
+windows-cmake-x64-debug-build:
+    <<: *windows_build_definition
+    before_script:
+        - $Env:generator = "Visual Studio 16 2019"
+        - $Env:project_platform = "x64"
+        - $Env:configuration = "Debug"
+        - $Env:build_system = "cmake"
+
+windows-msbuild-Win32-release-build:
+    <<: *windows_build_definition
+    before_script:
+        - $Env:project_platform = "Win32"
+        - $Env:configuration = "Release"
+        - $Env:build_system = "msbuild"
+
+windows-msbuild-Win32-debug-build:
+    <<: *windows_build_definition
+    before_script:
+        - $Env:project_platform = "Win32"
+        - $Env:configuration = "Debug"
+        - $Env:build_system = "msbuild"
+
+windows-mingw32-cmake-build:
+    stage: build
+    needs: []
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "cmake"
+        # fail on any compiler warnings
+        - $Env:CFLAGS = "-Werror -Wno-deprecated-declarations"
+        - $Env:CXXFLAGS = "-Werror -Wno-deprecated-declarations"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*.exe
+            - Packages/*/*/*.zip
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-mingw64-cmake-build:
+    stage: build
+    needs: []
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "cmake"
+        # fail on any compiler warnings
+        - $Env:CFLAGS = "-Werror -Wno-deprecated-declarations"
+        - $Env:CXXFLAGS = "-Werror -Wno-deprecated-declarations"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-build.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*.exe
+            - Packages/*/*/*.zip
+    tags:
+        - windows
+    except:
+        - tags
+
+windows-cygwin-cmake-build:
+    stage: build
+    needs: []
+    script:
+        # disable Windows Defender
+        - Add-MpPreference -ExclusionPath 'C:\'
+        - wget https://cygwin.com/setup-x86_64.exe -OutFile C:\setup-x86_64.exe
+        - Start-Process "C:\setup-x86_64.exe" -ArgumentList "--quiet-mode --site https://mirrors.kernel.org/sourceware/cygwin --wait" -wait
+        - $env:Path = "C:\cygwin64\bin;" + $env:Path
+        - $Env:build_system = "cmake"
+        # fail on any compiler warnings
+        - $Env:CFLAGS = "-Werror -Wno-deprecated-declarations"
+        - $Env:CXXFLAGS = "-Werror -Wno-deprecated-declarations"
+        # change line endings from crlf to lf
+        - C:\cygwin64\bin\sed -i 's/\r//g' ci/*.sh lib/common/color_names lib/common/brewer_colors lib/common/svgcolor_names
+        - C:\cygwin64\bin\bash -l -c 'cd $CI_PROJECT_DIR && ci/cygwin-build.sh'
+    artifacts:
+        when: always
+        expire_in: 1 week
+        paths:
+            - Packages/*/*/*.zip
+            - Packages/*/*/*.bz2
+    cache:
+        key: windows-cygwin-cmake-build
+        paths:
+            - ccache-cache
+    tags:
+        - windows
+    except:
+        - tags
+
+meta-data:
+    stage: test
+    script:
+        - CONFIGURE_LOGS=Metadata/*/*/configure.log
+        - ci/generate_configuration_table.py --output-format HTML ${CONFIGURE_LOGS} > configuration-long-no-color.html
+        - ci/generate_configuration_table.py --output-format HTML --short ${CONFIGURE_LOGS} > configuration-short-no-color.html
+        - ci/generate_configuration_table.py --output-format HTML --short --color ${CONFIGURE_LOGS} > configuration-short-color-green-red.html
+        - ci/generate_configuration_table.py --output-format HTML --short --colors black:red ${CONFIGURE_LOGS} > configuration-short-color-red-only.html
+    artifacts:
+        paths:
+            - configuration-*.html
+    except:
+        - tags
+
+ubuntu-20.04-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu-20.04-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-20.04
+
+ubuntu-22.04-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu-22.04-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-23.04-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "ubuntu-23.04-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-23.04
+
+centos7-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "centos7-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: centos7
+
+fedora37-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "fedora37-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora37
+
+fedora38-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="autotools"
+    needs:
+        - job: "fedora38-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora38
+
+ubuntu-20.04-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "ubuntu-20.04-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-20.04
+
+ubuntu-22.04-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "ubuntu-22.04-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-22.04
+
+ubuntu-23.04-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "ubuntu-23.04-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-23.04
+
+ubuntu-23.04-cmake-ASan-test-including-ctest:
+    <<: *linux_test_definition_including_ctest
+    before_script:
+        - export build_system="cmake"
+        - export CFLAGS="-g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
+        - export CXXFLAGS="-g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
+        - export LDFLAGS="-g -fno-omit-frame-pointer -fsanitize=address,undefined -fno-sanitize-recover=address,undefined"
+        - export UBSAN_OPTIONS=print_stacktrace=1
+        - echo 'leak:*libfontconfig*' > suppressions.txt
+        - export LSAN_OPTIONS=suppressions=$(pwd)/suppressions.txt
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "ubuntu-23.04-cmake-ASan-build-for-ctest"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: ubuntu-23.04
+
+centos7-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+        # Graphviz libs are installed in /usr/lib, but Centos 7 doesn't look there by default
+        - export LD_LIBRARY_PATH=/usr/lib
+    needs:
+        - job: "centos7-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: centos7
+
+fedora37-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "fedora37-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora37
+
+fedora38-cmake-test:
+    <<: *linux_test_definition
+    before_script:
+        - export build_system="cmake"
+        - python3 gen_version.py --output GRAPHVIZ_VERSION
+    needs:
+        - job: "fedora38-cmake-build"
+          artifacts: true
+    tags:
+        - linux
+    variables:
+      IMAGE: fedora38
+
+windows-mingw32-cmake-test:
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "cmake"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-install.sh'
+        - $Env:graphviz_install_dir = "C:\Graphviz"
+        - $msys2_release = $(C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'uname -r')
+        - Invoke-Expression "./Packages/msys2/$msys2_release/Graphviz-*.exe /S /D=$env:graphviz_install_dir" | Out-Null
+        - $env:Path = $env:graphviz_install_dir + "\bin" + ";" + $env:Path
+        - C:\msys64\msys2_shell.cmd -defterm -mingw32 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-test.sh'
+    needs:
+        - job: "windows-mingw32-cmake-build"
+          artifacts: true
+    tags:
+        - windows
+    except:
+        - tags
+    artifacts:
+        reports:
+            junit: report.xml
+
+windows-mingw64-cmake-test:
+    script:
+        - powershell -NoProfile -NonInteractive -ExecutionPolicy Bypass -Command ci\mingw-prepare.ps1
+        - $Env:build_system = "cmake"
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-install.sh'
+        - $Env:graphviz_install_dir = "C:\Graphviz"
+        - $msys2_release = $(C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'uname -r')
+        - Invoke-Expression "./Packages/msys2/$msys2_release/Graphviz-*.exe /S /D=$env:graphviz_install_dir" | Out-Null
+        - $env:Path = $env:graphviz_install_dir + "\bin" + ";" + $env:Path
+        - C:\msys64\msys2_shell.cmd -defterm -mingw64 -here -no-start -l -c 'cd $CI_PROJECT_DIR && ci/mingw-test.sh'
+    needs:
+        - job: "windows-mingw64-cmake-build"
+          artifacts: true
+    tags:
+        - windows
+    except:
+        - tags
+    artifacts:
+        reports:
+            junit: report.xml
+
+deployment:
+    stage: deploy
+    image: registry.gitlab.com/gitlab-org/release-cli:latest
+    # do not re-run this job for new Git tags of previously seen commits
+    except:
+        - tags
+    before_script:
+        - apk add --update-cache curl
+        - apk add --update-cache python3
+    script:
+        - python3 ci/deploy.py
+    # do not run this job for MRs, developer’s forks, etc.
+    only:
+        - main@graphviz/graphviz
+    artifacts:
+        when: on_success
+        expire_in: 1 week
+        paths:
+            - graphviz-*.json
+
+.docker_template: &docker_definition
+  image: docker:stable
+  services:
+    - docker:dind
+  before_script:
+    # Docker prefers passwords passed on stdin rather than as arguments,
+    # presumably because stdin isn't visible to other processes.
+    # $CI_JOB_TOKEN is documented at
+    # https://docs.gitlab.com/ee/user/project/new_ci_build_permissions_model.html#job-token
+    - echo -n $CI_JOB_TOKEN | docker login -u gitlab-ci-token --password-stdin $CI_REGISTRY
+  # do not re-run this job for new Git tags of previously seen commits
+  except:
+    - tags
+
+.docker_build_template: &docker_build_definition
+  <<: *docker_definition
+  stage: build_docker_images
+  script:
+    # fetches the :latest image (not failing if image is not found) for caching
+    - docker pull $CI_REGISTRY_IMAGE/$IMAGE:latest || true
+    # Build and push with git commit SHA tag, reusing layers from the :latest image if possible
+    - DOCKER_BUILDKIT=1 docker build -t $CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA --cache-from $CI_REGISTRY_IMAGE/$IMAGE:latest -f ci/$IMAGE/Dockerfile --build-arg BUILDKIT_INLINE_CACHE=1 .
+    - docker push $CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA
+
+.docker_push_template: &docker_push_definition
+  <<: *docker_definition
+  stage: push_docker_images
+  variables:
+    # Docker pull and push doesn't need GitLab to clone the source code.
+    # Skipping code checkout should speed up execution a little.
+    GIT_STRATEGY: none
+  only:
+    refs:
+      # Only main should be pushed to :latest, not unmerged merge-requests.
+      # It's ok for this to run on other repos (not just graphviz/graphviz) as
+      # they have their own container registries.
+      - main
+  script:
+    - docker pull $CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA
+    # Re-tag, push to :latest tag
+    - docker tag $CI_REGISTRY_IMAGE/$IMAGE:$CI_COMMIT_SHA $CI_REGISTRY_IMAGE/$IMAGE:latest
+    - docker push     $CI_REGISTRY_IMAGE/$IMAGE:latest
+
+docker_build_centos7:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: centos7
+
+docker_build_fedora37:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: fedora37
+
+docker_build_fedora38:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: fedora38
+
+docker_build_ubuntu-20.04:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: ubuntu-20.04
+
+docker_build_ubuntu-22.04:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: ubuntu-22.04
+
+docker_build_ubuntu-23.04:
+  <<: *docker_build_definition
+  variables:
+    IMAGE: ubuntu-23.04
+
+docker_push_centos7:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: centos7
+  needs:
+    - docker_build_centos7
+
+docker_push_fedora37:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: fedora37
+  needs:
+    - docker_build_fedora37
+
+docker_push_fedora38:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: fedora38
+  needs:
+    - docker_build_fedora38
+
+docker_push_ubuntu-20.04:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: ubuntu-20.04
+  needs:
+    - docker_build_ubuntu-20.04
+
+docker_push_ubuntu-22.04:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: ubuntu-22.04
+  needs:
+    - docker_build_ubuntu-22.04
+
+docker_push_ubuntu-23.04:
+  <<: *docker_push_definition
+  variables:
+    IMAGE: ubuntu-23.04
+  needs:
+    - docker_build_ubuntu-23.04
+
+lint_clang_format:
+  image: "$CI_REGISTRY_IMAGE/ubuntu-23.04:$CI_COMMIT_SHA"
+  stage: test
+  needs:
+    - docker_build_ubuntu-23.04
+  script:
+    # output some info into the logs for debugging
+    - clang-format --version
+    - cat /etc/os-release
+    - uname -rms
+    # check file formatting
+    - python3 ci/clang_format.py
+  except:
+    - tags
+
+lint_cmake_format:
+  image: "$CI_REGISTRY_IMAGE/fedora38:$CI_COMMIT_SHA"
+  stage: test
+  needs:
+    - docker_build_fedora38
+  script:
+    - git ls-files -z -- '**/CMakeLists.txt' '**/*.cmake' '**/*.cmake.in' | xargs -0 -- python3 -m cmakelang.lint
+  except:
+    - tags
+
+lint_html:
+  image: "$CI_REGISTRY_IMAGE/ubuntu-23.04:$CI_COMMIT_SHA"
+  stage: test
+  needs:
+    - docker_build_ubuntu-23.04
+  script:
+    - git ls-files -z -- '**/*.html' | xargs -0 -- xmllint --nonet --noout --html --valid
+  except:
+    - tags
+
+lint_python:
+  image: "$CI_REGISTRY_IMAGE/ubuntu-22.04:$CI_COMMIT_SHA"
+  stage: test
+  needs:
+    - docker_build_ubuntu-22.04
+  script:
+    - git ls-files -z -- '**.py' | xargs -0 -- python3 -m pylint --rcfile=.pylintrc --disable=fixme
+    - git ls-files -z -- '**.py' | xargs -0 -- python3 -m black --check
+    - git ls-files -z -- '**.py' | xargs -0 -- python3 -m isort --profile=black --check
+  except:
+    - tags

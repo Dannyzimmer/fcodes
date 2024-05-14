@@ -1,0 +1,22 @@
+digraph G {
+	subgraph clusterSurround1 {
+
+		subgraph cluster1 {
+			graph [color=purple]
+			x1 -> y1
+			x1 -> z1
+		}
+		subgraph cluster2 {
+			graph [color=pink]
+			x2 -> y2
+			x2 -> z2
+			subgraph cluster2a {
+				graph [color=blue  label=C2 boss=worker]
+				x21 ->x22
+			}
+		}
+		q0 -> x2;
+		z2 -> x1
+	}
+	graph [label="My Cool Graph" fontcolor=red id=boss]  //  this line will be repositioned
+}
