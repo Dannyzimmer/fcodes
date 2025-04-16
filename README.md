@@ -7,7 +7,10 @@ Utilizing Fcodes for encoding kinship relationships offers several advantages:
 
 2. **Adaptability**: Kinship relationships are deduced from a set of codes, eliminating the necessity for adhering to a rigid structure. Fcodes operate independently, allowing them to be inserted out of sequence without disrupting the fundamental relationships. This affords a high degree of flexibility in data collection.
 
-3. **Accessibility**: Fcode encoding can be carried out with minimal tools, such as a pen and paper. In digital environments, these codes can be stored in any text file, thereby freeing the codification process from dependence on a specific operating system. 
+3. **Accessibility**: Fcode encoding can be carried out with minimal tools, such as a pen and paper. In digital environments, these codes can be stored in any text file, thereby freeing the codification process from dependence on a specific operating system.
+
+> [!TIP]
+> For kinship encoding with the Fcode algorithm, consider using the [**F-Tree**](https://github.com/Dannyzimmer/F-Tree) graphical interface. It provides a user-friendly way to apply the algorithm.
 
 ## Table of contents
 - [The Encoding Algorithm](#the-encoding-algorithm)
@@ -605,3 +608,7 @@ The module html_report.py allows for the creation of a HTML report of all the ki
 
 ![HTML report example](fcodes/libs/img/html_report_example.png)
 
+# Publications
+- Pérez Rodríguez, D., Agis Balboa, R. C., & López Fernández, H. (2024). Fcodes: A straightforward algorithm for kinships encoding. 18th International Conference on Practical Applications of Computational Biology & Bioinformatics: PACBB 2024, Salamanca, España, 26-28 junio 2024. https://www.investigo.biblioteca.uvigo.es/xmlui/handle/11093/7494
+
+- Pérez-Rodríguez, D., Agís-Balboa, R. C., & López-Fernández, H. (2025). Fcodes update: A kinship encoding framework with F-Tree GUI & LLM inference. Journal of Integrative Bioinformatics. https://doi.org/10.1515/jib-2024-0046
