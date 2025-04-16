@@ -33,6 +33,7 @@ Utilizing Fcodes for encoding kinship relationships offers several advantages:
     - [Freader](#freader)
 - [Modules](#modules)
     - [html_report](#html_report)
+- [Publications](#publications)
 
 # The Encoding Algorithm
 This section explains the process of encoding kinship relationships, establishes a valid data file for working with fcodes, and introduces key terms essential for its comprehension.
@@ -68,13 +69,23 @@ Consideration 1 is essential as it is necessary to distinguish between individua
 ## Encoding rules
 An **origin of coordinates (OC)** is taken, **usually oneself**, and from there the kinships are referenced. From the OC to the destination, **each letter that is added refers to the previous letter**. In this way, the kinship can be built from left to right like so:
 
+![](docs/fcode_algorithm_visual_example.png)
+
+> [!NOTE]  
+> Numbers have been removed from the following example for simplicity.
+
 - **My father = \*P**
     - me --> \*
     - my father --> \*P
-- **My maternal grandfather = \*MP**
+- **My paternal aunt = \*PA**
     - me --> \*
-    - my mother --> \*M
-    - the father of my mother --> \*MP
+    - my father --> \*P
+    - the sister of my father --> \*PA
+- **My paternal cousin = \*PAa**
+    - me --> \*
+    - my father --> \*P
+    - the sister of my father --> \*PA
+    - the daughter of the sister of my father --> \*PAa
 
 And so on:
 - **\*MO2CO-a1**: 
