@@ -620,6 +620,6 @@ The module html_report.py allows for the creation of a HTML report of all the ki
 ![HTML report example](fcodes/libs/img/html_report_example.png)
 
 # Publications
-- Pérez Rodríguez, D., Agis Balboa, R. C., & López Fernández, H. (2024). Fcodes: A straightforward algorithm for kinships encoding. 18th International Conference on Practical Applications of Computational Biology & Bioinformatics: PACBB 2024, Salamanca, España, 26-28 junio 2024. https://www.investigo.biblioteca.uvigo.es/xmlui/handle/11093/7494
+- Pérez Rodríguez, D., Agis Balboa, R. C., & López Fernández, H. (2024). Fcodes: A straightforward algorithm for kinships encoding. 18th International Conference on Practical Applications of Computational Biology & Bioinformatics: PACBB 2024, Salamanca, España, 26-28 junio 2024. https://doi.org/10.1007/978-3-031-87873-2_10
 
 - Pérez-Rodríguez, D., Agís-Balboa, R. C., & López-Fernández, H. (2025). Fcodes update: A kinship encoding framework with F-Tree GUI & LLM inference. Journal of Integrative Bioinformatics. https://doi.org/10.1515/jib-2024-0046
